@@ -1,0 +1,19 @@
+.banner-1 {
+    background-image: url("../../../assets/img/banner1.jpg");
+}
+
+.banner-2 {
+    background-image: url("../../../assets/img/banner2.jpg");
+}
+
+.bg-cover {
+    background-size: cover;
+}
+
+.bg-center {
+    background-position: center;
+}
+
+.bg-fixed {
+    background-attachment: fixed;
+}

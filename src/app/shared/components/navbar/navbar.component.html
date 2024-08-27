@@ -1,0 +1,39 @@
+<nav class="navbar navbar-expand-lg bg-dark sticky-top p-2" data-bs-theme="dark">
+    <div class="container-fluid">
+        <a class="navbar-brand d-flex align-items-center text-warning fw-bold">
+            <img src="../../../../assets/img/logo.png" width="32" class="d-inline-block align-text-top me-2">
+            FLACK'S BARBER SHOP
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
+            <ul class="navbar-nav mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/home" routerLinkActive="text-warning"
+                        [routerLinkActiveOptions]="{ exact: true }">INICIO</a>
+                </li>
+                <!-- <li class="nav-item">
+                    <a class="nav-link" routerLink="/about-us" routerLinkActive="text-warning" [routerLinkActiveOptions]="{ exact: true }">ACERCA DE NOSOTROS</a>
+                </li> -->
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/products" routerLinkActive="text-warning"
+                        [routerLinkActiveOptions]="{ exact: true }">PRODUCTOS</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/services" routerLinkActive="text-warning"
+                        [routerLinkActiveOptions]="{ exact: true }">SERVICIOS</a>
+                </li>
+                <!-- <li class="nav-item">
+                    <a class="nav-link" routerLink="/contact-us" routerLinkActive="text-warning" [routerLinkActiveOptions]="{ exact: true }">CONTÁCTANOS</a>
+                </li> -->
+                <li class="nav-item" title="Administración">
+                    <a class="nav-link" routerLink="/admin">
+                        <i class="bi bi-gear-fill"></i>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
