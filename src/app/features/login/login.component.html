@@ -1,0 +1,112 @@
+<div class="row vh-100 g-0">
+    <!-- Left side -->
+    <div class="col-lg-6 position-relative d-none d-lg-block">
+        <div class="bg-holder" style="background-image: url(./../../../assets/img/banner1.jpg)"></div>
+    </div>
+    <!--/ Left side -->
+
+    <!-- Right side -->
+    <div class="col-lg-6">
+        <div class="row align-items-center justify-content-center h-100 g-0 py-4 px-4 px-sm-0">
+            <div class="col col-sm-6 col-lg-7 col-xl-6">
+
+                <!-- Logo -->
+                <a class="d-flex justify-content-center mb-2">
+                    <img src="../../../assets/img/logo.png" width="75">
+                </a>
+                <!--/ Logo -->
+
+                <div class="text-center mb-4">
+                    <h3 class="fw-bold">Inicio de sesión</h3>
+                    <p class="text-secondary">Solo puedes acceder si trabajas en Flack's Barber Shop</p>
+                </div>
+
+                <!-- Form -->
+                <form [formGroup]="loginForm" (ngSubmit)="logIn()">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text"
+                        [class.border-danger]="loginForm.get('email')?.invalid && (loginForm.get('email')?.dirty || loginForm.get('email')?.touched)">
+                            <i class="bi bi-envelope"></i>
+                        </span>
+                        <input formControlName="email" type="email" class="form-control form-control-lg fs-6"
+                            placeholder="Correo electrónico"
+                            [class.is-invalid]="loginForm.get('email')?.invalid && (loginForm.get('email')?.dirty || loginForm.get('email')?.touched)">
+                    </div>
+                    @if (loginForm.get('email')?.invalid && (loginForm.get('email')?.dirty ||
+                    loginForm.get('email')?.touched)) {
+                    <div class="mb-3">
+                        @if (loginForm.hasError('required', 'email')) {
+                        <small class="text-danger">El correo es obligatorio. </small>
+                        }
+                        @if (loginForm.hasError('email', 'email')) {
+                        <small class="text-danger">El correo no es válido. </small>
+                        }
+                        @if (loginForm.hasError('emailDomain', 'email')) {
+                        <small class="text-danger">El correo no pertenece al dominio Pepsico. </small>
+                        }
+                    </div>
+                    }
+                    <div class="input-group mb-3">
+                        <span class="input-group-text"
+                        [class.border-danger]="loginForm.get('password')?.invalid && (loginForm.get('password')?.dirty || loginForm.get('password')?.touched)">
+                            <i class="bi bi-lock"></i>
+                        </span>
+                        <input formControlName="password" type="password" class="form-control form-control-lg fs-6"
+                            placeholder="Contraseña"
+                            [class.is-invalid]="loginForm.get('password')?.invalid && (loginForm.get('password')?.dirty || loginForm.get('password')?.touched)">
+                    </div>
+                    @if (loginForm.get('password')?.invalid && (loginForm.get('password')?.dirty ||
+                    loginForm.get('password')?.touched)) {
+                    <div class="mb-3">
+                        @if (loginForm.hasError('required', 'password')) {
+                        <small class="text-danger">La contraseña es obligatoria. </small>
+                        }
+                        @if (loginForm.hasError('minlength', 'password')) {
+                        <small class="text-danger">La contraseña debe tener al menos 8 caracteres. </small>
+                        }
+                    </div>
+                    }
+                    <div class="input-group mb-3 d-flex justify-content-between">
+                        <div class="form-check">
+                            <div class="dropdown dropdown-hover">
+                                <input type="checkbox" formControlName="rememberMe"
+                                    class="form-check-input" id="rememberMe">
+                                    @if (loginForm.get('rememberMe')?.value === false) {
+                                        <div class="dropdown-menu p-3">
+                                            <p class="small m-0">Mantén tu sesión activa por 30 min, incluso si cierras el
+                                                navegador. Sin esta opción, debes iniciar sesión de nuevo si cierras el
+                                                navegador.</p>
+                                        </div>
+                                    }
+                            </div>
+                            <label for="rememberMe"
+                                class="form-check-label text-secondary"><small>Recuérdame</small></label>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-warning btn-md w-100 mb-3">Iniciar sesión</button>
+                    <div class="mb-3">
+                        @if (errorMessage) {
+                            <small class="text-danger">{{ errorMessage }}</small>
+                        }
+                    </div>
+                </form>
+                <!--/ Form -->
+                
+                <!-- Divider -->
+                <div class="position-relative">
+                    <hr class="text-secondary divider">
+                    <div class="divider-content-center"></div>
+                </div>
+                <!--/ Divider -->
+
+                <div class="text-center">
+                    <small>¿Solo eres cliente? <a class="text-decoration-none link-opacity-100-hover"
+                            routerLink="/home">Volver al inicio</a></small>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <!--/ Right side -->
+
+</div>
