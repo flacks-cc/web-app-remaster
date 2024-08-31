@@ -201,15 +201,14 @@
                 </form>
             </div>
             <div class="modal-footer">
+                @if (errorMessage) {
+                    <div class="text-danger mt-3" style="text-align: left; font-weight: normal;">{{ errorMessage }}</div>
+                }
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="submit" class="btn" data-bs-dismiss="modal" (click)="triggerSubmit()"
-                    [attr.data-bs-dismiss]="serviceForm.valid ? 'modal' : null"
+                <button type="submit" class="btn" (click)="triggerSubmit()"
                     [ngClass]="isEditing ? 'btn-primary' : 'btn-success'">
                     {{ isEditing ? 'Editar' : 'Guardar' }}
-                </button>
-                @if (errorMessage) {
-                <small class="text-danger mt-3">{{ errorMessage }}</small>
-                }
+                </button>                
             </div>
         </div>
     </div>
@@ -235,3 +234,4 @@
         </div>
     </div>
 </div>
+

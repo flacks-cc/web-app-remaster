@@ -4,5 +4,12 @@ export interface Product{
     brand?: string;
     description?: string;
     price: number;
-    images: string [];
+    images: Image [];
 }
+
+export interface Image {
+    id: number;
+    image: string;
+    imageUrl: string;
+}
+

@@ -8,24 +8,24 @@ import { Service } from '../models/service.model';
 })
 export class ServiceService {
 
-  constructor(private _http: HttpClient) {}
+  constructor(private httpClient: HttpClient) {}
 
   private URL = 'http://localhost:8080/api/v1/services';
 
   getAllServices(): Observable<Service[]> {
-    return this._http.get<Service[]>(`${this.URL}`)
+    return this.httpClient.get<Service[]>(`${this.URL}`)
   }
 
-  createService(service: Service): Observable<Service> {
-    return this._http.post<Service>(`${this.URL}`, service)
+  createService(service: FormData): Observable<any> {
+    return this.httpClient.post(`${this.URL}`, service)
   }
 
-  updateService(id: number, service: Service): Observable<Service> {
-    return this._http.put<Service>(`${this.URL}/${id}`, service)
+  updateService(id: number, service: FormData): Observable<any> {
+    return this.httpClient.put(`${this.URL}/${id}`, service)
   }
 
   deleteService(id: number): Observable<Service> {
-    return this._http.delete<Service>(`${this.URL}/${id}`)
+    return this.httpClient.delete<Service>(`${this.URL}/${id}`)
   }
 
 }

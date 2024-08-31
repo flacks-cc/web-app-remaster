@@ -1,15 +1,17 @@
-import { NgClass } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Product } from '../../../core/models/product.model';
+import { Product, Image } from '../../../core/models/product.model';
 import { ProductService } from '../../../core/services/product.service';
+import { NgClass } from '@angular/common';
+import { Router } from '@angular/router';
+import { Modal } from 'bootstrap';
 
 @Component({
   selector: 'app-manage-products',
   standalone: true,
   imports: [ReactiveFormsModule, NgClass],
   templateUrl: './manage-products.component.html',
-  styleUrl: './manage-products.component.css'
+  styleUrls: ['./manage-products.component.css']
 })
 export class ManageProductsComponent implements OnInit {
   products: Product[] = [];
@@ -20,36 +22,94 @@ export class ManageProductsComponent implements OnInit {
   productForm: FormGroup;
   productToDelete: Product | null = null;
   errorMessage: string = '';
+  isLoading: boolean = false;
 
-  constructor(private fb: FormBuilder,
-    private productService: ProductService) {
+  private productModal: Modal | null = null;
+  private deleteProductModal: Modal | null = null;
+
+  constructor(
+    private fb: FormBuilder,
+    private productService: ProductService,
+    private router: Router
+  ) {
     this.productForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
       brand: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
       description: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(255)]],
-      price: ['', [Validators.min(0)]],
+      price: ['', [Validators.required, Validators.min(0)]],
       images: [[]]
     });
   }
 
   ngOnInit(): void {
     this.loadInitialData();
+    this.initializeModals();
+  }
+
+  private initializeModals(): void {
+    const productModalElement = document.getElementById('productModal');
+    if (productModalElement) {
+      this.productModal = new Modal(productModalElement);
+    }
+
+    const deleteProductModalElement = document.getElementById('deleteProductModal');
+    if (deleteProductModalElement) {
+      this.deleteProductModal = new Modal(deleteProductModalElement);
+    }
   }
 
   loadInitialData() {
+    this.isLoading = true;
     this.productService.getAllProducts().subscribe({
       next: (data: Product[]) => {
         this.products = data;
+        this.isLoading = false;
       },
       error: (err) => {
         console.error('Error fetching products:', err);
+        this.errorMessage = 'Error al cargar los productos. Por favor, intente de nuevo.';
+        this.isLoading = false;
       }
     });
   }
 
-  // Método para abrir el explorador de archivos al hacer clic en el botón de subir imágenes
+  openAddProductModal() {
+    this.isEditing = false;
+    this.resetModalState();
+    if (this.productModal) {
+      this.productModal.show();
+    }
+  }
+
+  openEditProductModal(product: Product) {
+    this.isEditing = true;
+    this.currentProduct = { ...product };
+    this.productForm.patchValue(product);
+    this.tempImages = product.images ? product.images.map((img: any) => img.imageUrl) : [];
+    this.errorMessage = '';
+    if (this.productModal) {
+      this.productModal.show();
+    }
+  }
+
+  onFilesSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files) {
+      Array.from(input.files).forEach((file) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          if (typeof reader.result === 'string' && !this.tempImages.includes(reader.result)) {
+            this.tempImages.push(reader.result);
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+      input.value = '';
+    }
+  }
+
   triggerFileInput() {
-    const fileInput = document.getElementById('serviceImages') as HTMLInputElement;
+    const fileInput = document.getElementById('productImages') as HTMLInputElement;
     if (fileInput) {
       fileInput.click();
     }
@@ -62,128 +122,174 @@ export class ManageProductsComponent implements OnInit {
     }
   }
 
-  // Método para seleccionar o deseleccionar una imagen
   toggleSelection(index: number): void {
     const idx = this.selectedImages.indexOf(index);
     if (idx > -1) {
-      this.selectedImages.splice(idx, 1); // Deselect
-    } else {
-      this.selectedImages.push(index); // Select
-    }
-  }
-
-  openAddProductModal() {
-    this.isEditing = false;
-    this.selectedImages = [];
-    this.currentProduct = { idProduct: 0, name: '', brand: '', description: '', price: 0, images: [] };
-    this.productForm.reset();
-    this.tempImages = [];
-
-    const fileInput = document.getElementById('serviceImages') as HTMLInputElement;
-    if (fileInput) {
-      fileInput.value = '';
-    }
-  }
-
-  openEditProductModal(product: Product) {
-    this.isEditing = true;
-    this.selectedImages = [];
-    this.currentProduct = { ...product };
-    this.productForm.patchValue(product);
-    this.tempImages = [...(product.images || [])];
-  }
-
-  onFilesSelected(event: Event) {
-    const input = event.target as HTMLInputElement;
-    if (input.files) {
-      Array.from(input.files).forEach((file) => {
-        const reader = new FileReader();
-        reader.onload = () => {
-          if (!this.tempImages.includes(reader.result as string)) {
-            this.tempImages.push(reader.result as string);
-          }
-        };
-        reader.readAsDataURL(file);
-      });
-
-      input.value = '';
-    }
-  }
-
-  selectImage(index: number, event: MouseEvent) {
-    event.preventDefault();
-    if (this.selectedImages.includes(index)) {
-      this.selectedImages = this.selectedImages.filter(i => i !== index);
+      this.selectedImages.splice(idx, 1);
     } else {
       this.selectedImages.push(index);
     }
   }
 
-  // Función para eliminar imágenes de la previsualización temporal
-  removeImage(index: number) {
-    this.tempImages.splice(index, 1);
-    this.selectedImages = this.selectedImages.filter((i) => i !== index);
-    this.selectedImages = this.selectedImages.map((i) => (i > index ? i - 1 : i));
+  selectImage(index: number, event: MouseEvent) {
+    event.preventDefault();
+    this.toggleSelection(index);
   }
 
-  // Función para eliminar las imágenes seleccionadas de la previsualización temporal
+  removeImage(index: number) {
+    this.tempImages.splice(index, 1);
+    this.selectedImages = this.selectedImages.filter((i) => i !== index)
+      .map((i) => (i > index ? i - 1 : i));
+  }
+
   removeSelectedImages() {
     this.selectedImages.sort((a, b) => b - a).forEach((index) => this.removeImage(index));
   }
 
-  // Función de guardado que aplica cambios a los datos originales
   saveProduct() {
-    // Asegúrate de que el formulario sea válido
     if (this.productForm.valid) {
+      const formData = new FormData();
       const productData = this.productForm.value;
+      formData.append('name', productData.name);
+      formData.append('brand', productData.brand);
+      formData.append('description', productData.description);
+      formData.append('price', productData.price.toString());
 
-      // Si estamos editando, llamamos a la función de actualizar
-      if (this.isEditing && this.currentProduct.idProduct) {
-        this.productService.updateProduct(this.currentProduct.idProduct, productData).subscribe({
-          next: (response) => {
-            console.log('Producto actualizado exitosamente', response);
-            // Aquí podrías cerrar el modal y refrescar la lista de productos
-          },
-          error: (error) => {
-            console.error('Error al actualizar el producto', error);
-          }
-        });
-      } else {
-        // Si no estamos editando, llamamos a la función de creación
-        this.productService.createProduct(productData).subscribe({
-          next: (response) => {
-            console.log('Producto creado exitosamente', response);
-            // Aquí podrías cerrar el modal y refrescar la lista de productos
-          },
-          error: (error) => {
-            console.error('Error al crear el producto', error);
+      const imagePromises: Promise<void>[] = [];
+      let hasNewImages = false;
+
+      if (this.isEditing && this.currentProduct.images) {
+        this.currentProduct.images.forEach((image: Image) => {
+          if (this.tempImages.includes(image.imageUrl)) {
+            const promise = fetch(image.imageUrl)
+              .then(res => res.blob())
+              .then(blob => {
+                formData.append('imageFile', blob, image.image);
+              });
+            imagePromises.push(promise);
           }
         });
       }
+
+      this.tempImages.forEach((image, index) => {
+        if (image.startsWith('data:image')) {
+          hasNewImages = true;
+          const promise = fetch(image)
+            .then(res => res.blob())
+            .then(blob => {
+              formData.append('imageFile', blob, `image${index}.png`);
+            });
+          imagePromises.push(promise);
+        }
+      });
+
+      if (!hasNewImages) {
+        formData.append('imageFile', new Blob(), 'placeholder.png');
+      }
+
+      Promise.all(imagePromises).then(() => {
+        this.isLoading = true;
+        if (this.isEditing && this.currentProduct.idProduct) {
+          this.productService.updateProduct(this.currentProduct.idProduct, formData).subscribe({
+            next: (response) => {
+              console.log('Producto actualizado exitosamente', response);
+              this.loadInitialData();
+              this.isLoading = false;
+              this.closeModal();
+            },
+            error: (error) => {
+              console.error('Error al actualizar el producto', error);
+              this.handleError(error);
+              this.isLoading = false;
+            }
+          });
+        } else {
+          this.productService.createProduct(formData).subscribe({
+            next: (response) => {
+              console.log('Producto creado exitosamente', response);
+              this.loadInitialData();
+              this.isLoading = false;
+              this.closeModal();
+            },
+            error: (error) => {
+              console.error('Error al crear el producto', error);
+              this.handleError(error);
+              this.isLoading = false;
+            }
+          });
+        }
+      });
     } else {
-      // Marca todos los controles como tocados para mostrar los errores
       Object.values(this.productForm.controls).forEach(control => {
         control.markAsTouched();
       });
     }
   }
 
+  handleError(error: any) {
+    if (error.error && error.error.message) {
+      this.errorMessage = error.error.message;
+    } else {
+      this.errorMessage = 'Ocurrió un error inesperado. Por favor, intente de nuevo.';
+    }
+  }
+
   confirmDeleteProduct(product: Product) {
     this.productToDelete = product;
+    if (this.deleteProductModal) {
+      this.deleteProductModal.show();
+    }
   }
 
   deleteProduct() {
     if (this.productToDelete) {
+      this.isLoading = true;
       this.productService.deleteProduct(this.productToDelete.idProduct).subscribe({
         next: () => {
-          this.products = this.products.filter(p => p.idProduct !== this.productToDelete!.idProduct);
+          this.loadInitialData();
           this.productToDelete = null;
           console.log('Producto eliminado');
+          this.isLoading = false;
+          this.closeDeleteModal();
         },
         error: (error) => {
           console.error('Error al eliminar el producto', error);
+          this.errorMessage = 'Error al eliminar el producto. Por favor, intente de nuevo.';
+          this.isLoading = false;
         }
       });
     }
+  }
+
+  closeModal() {
+    if (this.productModal) {
+      this.productModal.hide();
+      document.body.classList.remove('modal-open');
+      const backdrop = document.getElementsByClassName('modal-backdrop')[0];
+      if (backdrop) {
+        backdrop.remove();
+      }
+    }
+    this.resetModalState();
+  }
+
+  closeDeleteModal() {
+    if (this.deleteProductModal) {
+      this.deleteProductModal.hide();
+      document.body.classList.remove('modal-open');
+      const backdrop = document.getElementsByClassName('modal-backdrop')[0];
+      if (backdrop) {
+        backdrop.remove();
+      }
+    }
+  }
+
+  private resetModalState() {
+    this.productForm.reset();
+    this.tempImages = [];
+    this.selectedImages = [];
+    this.errorMessage = '';
+    this.isEditing = false;
+    this.currentProduct = { idProduct: 0, name: '', brand: '', description: '', price: 0, images: [] };
   }
 }

@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { Service } from '../../../core/models/service.model';
+import { Service, Image } from '../../../core/models/service.model';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgClass } from '@angular/common';
 import { ServiceService } from '../../../core/services/service.service';
+import { Modal } from 'bootstrap';
 
 @Component({
   selector: 'app-manage-services',
@@ -20,9 +21,15 @@ export class ManageServicesComponent implements OnInit {
   serviceForm: FormGroup;
   serviceToDelete: Service | null = null;
   errorMessage: string = '';
+  isLoading: boolean = false;
 
-  constructor(private fb: FormBuilder,
-    private serviceService: ServiceService) {
+  private serviceModal: Modal | null = null;
+  private deleteServiceModal: Modal | null = null;
+
+  constructor(
+    private fb: FormBuilder,
+    private serviceService: ServiceService
+  ) {
     this.serviceForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
       description: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(255)]],
@@ -34,20 +41,36 @@ export class ManageServicesComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadInitialData();
+    this.initializeModals();
+  }
+
+  private initializeModals(): void {
+    const serviceModalElement = document.getElementById('serviceModal');
+    if (serviceModalElement) {
+      this.serviceModal = new Modal(serviceModalElement);
+    }
+
+    const deleteServiceModalElement = document.getElementById('deleteServiceModal');
+    if (deleteServiceModalElement) {
+      this.deleteServiceModal = new Modal(deleteServiceModalElement);
+    }
   }
 
   loadInitialData() {
+    this.isLoading = true;
     this.serviceService.getAllServices().subscribe({
       next: (data: Service[]) => {
         this.services = data;
+        this.isLoading = false;
       },
       error: (err) => {
-        console.error('Error fetching products:', err);
+        console.error('Error fetching services:', err);
+        this.errorMessage = 'Error al cargar los servicios. Por favor, intente de nuevo.';
+        this.isLoading = false;
       }
     });
   }
 
-  // Método para abrir el explorador de archivos al hacer clic en el botón de subir imágenes
   triggerFileInput() {
     const fileInput = document.getElementById('serviceImages') as HTMLInputElement;
     if (fileInput) {
@@ -62,35 +85,31 @@ export class ManageServicesComponent implements OnInit {
     }
   }
 
-  // Método para seleccionar o deseleccionar una imagen
   toggleSelection(index: number): void {
     const idx = this.selectedImages.indexOf(index);
     if (idx > -1) {
-      this.selectedImages.splice(idx, 1); // Deselect
+      this.selectedImages.splice(idx, 1);
     } else {
-      this.selectedImages.push(index); // Select
+      this.selectedImages.push(index);
     }
   }
 
   openAddServiceModal() {
     this.isEditing = false;
-    this.selectedImages = [];
-    this.currentService = { idService: 0, name: '', description: '', price: 0, duration: 0, images: []};
-    this.serviceForm.reset();
-    this.tempImages = [];
-
-    const fileInput = document.getElementById('serviceImages') as HTMLInputElement;
-    if (fileInput) {
-      fileInput.value = '';
+    this.resetModalState();
+    if (this.serviceModal) {
+      this.serviceModal.show();
     }
   }
 
   openEditServiceModal(service: Service) {
     this.isEditing = true;
-    this.selectedImages = [];
     this.currentService = { ...service };
     this.serviceForm.patchValue(service);
-    this.tempImages = [...(service.images || [])];
+    this.tempImages = service.images ? service.images.map((img: any) => img.imageUrl) : [];
+    if (this.serviceModal) {
+      this.serviceModal.show();
+    }
   }
 
   onFilesSelected(event: Event) {
@@ -105,82 +124,169 @@ export class ManageServicesComponent implements OnInit {
         };
         reader.readAsDataURL(file);
       });
-
       input.value = '';
     }
   }
 
   selectImage(index: number, event: MouseEvent) {
     event.preventDefault();
-    if (this.selectedImages.includes(index)) {
-      this.selectedImages = this.selectedImages.filter(i => i !== index);
-    } else {
-      this.selectedImages.push(index);
-    }
+    this.toggleSelection(index);
   }
 
-  // Función para eliminar imágenes de la previsualización temporal
   removeImage(index: number) {
     this.tempImages.splice(index, 1);
-    this.selectedImages = this.selectedImages.filter((i) => i !== index);
-    this.selectedImages = this.selectedImages.map((i) => (i > index ? i - 1 : i));
+    this.selectedImages = this.selectedImages.filter((i) => i !== index)
+      .map((i) => (i > index ? i - 1 : i));
   }
 
-  // Función para eliminar las imágenes seleccionadas de la previsualización temporal
   removeSelectedImages() {
     this.selectedImages.sort((a, b) => b - a).forEach((index) => this.removeImage(index));
   }
 
-  // Función de guardado que aplica cambios a los datos originales
   saveService() {
-    Object.values(this.serviceForm.controls).forEach(control => {
-      control.markAsTouched();
-    });
-
     if (this.serviceForm.valid) {
-      const serviceData = {
-        ...this.serviceForm.value,
-        images: [...this.tempImages],
-      };
+      const formData = new FormData();
+      const serviceData = this.serviceForm.value;
+      formData.append('name', serviceData.name);
+      formData.append('description', serviceData.description);
+      formData.append('price', serviceData.price.toString());
+      formData.append('duration', serviceData.duration.toString());
 
-      if (this.isEditing) {
-        const index = this.services.findIndex((s) => s.idService === this.currentService.idService);
-        if (index !== -1) {
-          this.services[index] = { ...this.currentService, ...serviceData };
-        }
-      } else {
-        const newService: Service = {
-          ...serviceData,
-          id: this.services.length + 1,
-        };
-        this.services.push(newService);
+      const imagePromises: Promise<void>[] = [];
+      let hasNewImages = false;
+
+      if (this.isEditing && this.currentService.images) {
+        this.currentService.images.forEach((image: Image, index: number) => {
+          if (this.tempImages.includes(image.imageUrl)) {
+            const promise = fetch(image.imageUrl)
+              .then(res => res.blob())
+              .then(blob => {
+                formData.append('imageFile', blob, image.image);
+              });
+            imagePromises.push(promise);
+          }
+        });
       }
 
-      // Limpiar las imágenes temporales y la selección de imágenes después de guardar
-      this.tempImages = [];
-      this.selectedImages = [];
+      this.tempImages.forEach((image, index) => {
+        if (image.startsWith('data:image')) {
+          hasNewImages = true;
+          const promise = fetch(image)
+            .then(res => res.blob())
+            .then(blob => {
+              formData.append('imageFile', blob, `image${index}.png`);
+            });
+          imagePromises.push(promise);
+        }
+      });
+
+      if (!hasNewImages) {
+        formData.append('imageFile', new Blob(), 'placeholder.png');
+      }
+
+      Promise.all(imagePromises).then(() => {
+        this.isLoading = true;
+        if (this.isEditing && this.currentService.idService) {
+          this.serviceService.updateService(this.currentService.idService, formData).subscribe({
+            next: (response) => {
+              console.log('Servicio actualizado exitosamente', response);
+              this.loadInitialData();
+              this.isLoading = false;
+              this.closeModal();
+            },
+            error: (error) => {
+              console.error('Error al actualizar el servicio', error);
+              this.handleError(error);
+              this.isLoading = false;
+            }
+          });
+        } else {
+          this.serviceService.createService(formData).subscribe({
+            next: (response) => {
+              console.log('Servicio creado exitosamente', response);
+              this.loadInitialData();
+              this.isLoading = false;
+              this.closeModal();
+            },
+            error: (error) => {
+              console.error('Error al crear el servicio', error);
+              this.handleError(error);
+              this.isLoading = false;
+            }
+          });
+        }
+      });
     } else {
-      console.log(this.serviceForm.errors);
-      this.errorMessage = 'Por favor, complete todos los campos correctamente.';
+      Object.values(this.serviceForm.controls).forEach(control => {
+        control.markAsTouched();
+      });
+    }
+  }
+
+  handleError(error: any) {
+    if (error.error && error.error.message) {
+      this.errorMessage = error.error.message;
+    } else {
+      this.errorMessage = 'Ocurrió un error inesperado. Por favor, intente de nuevo.';
     }
   }
 
   confirmDeleteService(service: Service) {
     this.serviceToDelete = service;
+    if (this.deleteServiceModal) {
+      this.deleteServiceModal.show();
+    }
   }
 
   deleteService() {
     if (this.serviceToDelete) {
+      this.isLoading = true;
       this.serviceService.deleteService(this.serviceToDelete.idService).subscribe({
         next: () => {
-          this.services = this.services.filter(s => s.idService !== this.serviceToDelete!.idService);
+          this.loadInitialData();
           this.serviceToDelete = null;
           console.log('Servicio eliminado');
+          this.isLoading = false;
+          this.closeDeleteModal();
         },
         error: (error) => {
           console.error('Error al eliminar el servicio', error);
+          this.errorMessage = 'Error al eliminar el servicio. Por favor, intente de nuevo.';
+          this.isLoading = false;
         }
       });
     }
+  }
+
+  closeModal() {
+    if (this.serviceModal) {
+      this.serviceModal.hide();
+      document.body.classList.remove('modal-open');
+      const backdrop = document.getElementsByClassName('modal-backdrop')[0];
+      if (backdrop) {
+        backdrop.remove();
+      }
+    }
+    this.resetModalState();
+  }
+
+  closeDeleteModal() {
+    if (this.deleteServiceModal) {
+      this.deleteServiceModal.hide();
+      document.body.classList.remove('modal-open');
+      const backdrop = document.getElementsByClassName('modal-backdrop')[0];
+      if (backdrop) {
+        backdrop.remove();
+      }
+    }
+  }
+
+  private resetModalState() {
+    this.serviceForm.reset();
+    this.tempImages = [];
+    this.selectedImages = [];
+    this.errorMessage = '';
+    this.isEditing = false;
+    this.currentService = { idService: 0, name: '', description: '', price: 0, duration: 0, images: [] };
   }
 }

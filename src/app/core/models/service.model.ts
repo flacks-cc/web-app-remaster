@@ -4,5 +4,12 @@ export interface Service {
     description: string;
     price?: number;
     duration?: number;
-    images: string[];
-  }
+    images: Image [];
+}
+
+export interface Image {
+    id: number;
+    image: string;
+    imageUrl: string;
+}
+

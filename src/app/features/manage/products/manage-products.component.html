@@ -47,7 +47,7 @@
 </div>
 
 <!-- Modal para agregar/editar producto -->
-<div class="modal fade" id="serviceModal" tabindex="-1" aria-labelledby="serviceModalLabel" aria-hidden="true">
+<div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -160,8 +160,8 @@
                     <div>
                         <label for="serviceImages" class="form-label">Gestionar imágenes</label>
                         <div class="d-flex">
-                            <input class="form-control d-none" type="file" id="serviceImages"
-                                (change)="onFilesSelected($event)" multiple>
+                            <input class="form-control d-none" type="file" id="productImages"
+                            (change)="onFilesSelected($event)" multiple>
                         </div>
 
                         <div class="row">
@@ -208,27 +208,26 @@
                 </form>
             </div>
             <div class="modal-footer">
+                @if (errorMessage) {
+                    <div class="text-danger mt-3" style="text-align: left; font-weight: normal;">{{ errorMessage }}</div>
+                }
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="submit" class="btn" data-bs-dismiss="modal" (click)="triggerSubmit()"
-                    [attr.data-bs-dismiss]="productForm.valid ? 'modal' : null"
+                <button type="submit" class="btn" (click)="triggerSubmit()"
                     [ngClass]="isEditing ? 'btn-primary' : 'btn-success'">
                     {{ isEditing ? 'Editar' : 'Guardar' }}
-                </button>
-                @if (errorMessage) {
-                <small class="text-danger mt-3">{{ errorMessage }}</small>
-                }
+                </button>    
             </div>
         </div>
     </div>
 </div>
 
 <!-- Modal para eliminar producto -->
-<div class="modal fade" id="deleteServiceModal" tabindex="-1" aria-labelledby="deleteServiceModalLabel"
+<div class="modal fade" id="deleteProductModal" tabindex="-1" aria-labelledby="deleteProductModalLabel"
     aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="deleteServiceModalLabel">Confirmar Eliminación</h5>
+                <h5 class="modal-title" id="deleteProductModalLabel">Confirmar Eliminación</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -236,7 +235,8 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-danger" (click)="deleteProduct()">Eliminar</button>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal"
+                    (click)="deleteProduct()">Eliminar</button>
             </div>
         </div>
     </div>
