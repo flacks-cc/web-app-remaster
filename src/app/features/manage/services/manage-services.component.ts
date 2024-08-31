@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Service } from '../../../core/models/service.model';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgClass } from '@angular/common';
+import { ServiceService } from '../../../core/services/service.service';
 
 @Component({
   selector: 'app-manage-services',
@@ -12,7 +13,7 @@ import { NgClass } from '@angular/common';
 })
 export class ManageServicesComponent implements OnInit {
   services: Service[] = [];
-  currentService: Service = { id: 0, name: '', description: '', price: 0, duration: 0, images: [] };
+  currentService: Service = { idService: 0, name: '', description: '', price: 0, duration: 0, images: [] };
   isEditing: boolean = false;
   tempImages: string[] = [];
   selectedImages: number[] = [];
@@ -20,9 +21,10 @@ export class ManageServicesComponent implements OnInit {
   serviceToDelete: Service | null = null;
   errorMessage: string = '';
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder,
+    private serviceService: ServiceService) {
     this.serviceForm = this.fb.group({
-      name: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
+      name: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
       description: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(255)]],
       price: ['', [Validators.min(0)]],
       duration: ['', [Validators.min(0)]],
@@ -35,63 +37,14 @@ export class ManageServicesComponent implements OnInit {
   }
 
   loadInitialData() {
-    // Inicializar con datos de ejemplo (sustituir cuando se consuma la API)
-    this.services = [
-      {
-        id: 1,
-        name: 'Corte desvanecido',
-        description: 'Un corte que se caracteriza por tener un aspecto limpio y bien definido.',
-        price: 100,
-        duration: 45,
-        images: ['assets/img/servicio1.png']
+    this.serviceService.getAllServices().subscribe({
+      next: (data: Service[]) => {
+        this.services = data;
       },
-      {
-        id: 2,
-        name: 'Arreglo barba',
-        description: 'Consiste en recortar, dar forma, limpiar y peinar la barba para lograr una apariencia estilizada.',
-        price: 70,
-        duration: 20,
-        images: ['assets/img/servicio2.png']
-      },
-      {
-        id: 3,
-        name: 'Corte escolar',
-        description: 'El corte ideal para estudiantes o niños. Mantiene el cabello corto.',
-        price: 80,
-        duration: 30,
-        images: ['assets/img/servicio3.png']
-      },
-      {
-        id: 4,
-        name: 'Afeitado express',
-        description: 'Se elimina el vello facial de manera rápida y efectiva.',
-        price: 90,
-        duration: 15,
-        images: ['assets/img/servicio4.png']
-      },
-      {
-        id: 5,
-        name: 'Arreglo cejas',
-        description: 'Elimina el vello no deseado para dar forma y resaltar los rasgos faciales.',
-        price: 30,
-        duration: 20,
-        images: ['assets/img/servicio5.png']
-      },
-      {
-        id: 6,
-        name: 'Diseños',
-        description: 'Contamos con variedad de cortes de pelo y estilos de barba. Puedes consultar con nuestros empleados el catálogo de cortes.',
-        images: ['assets/img/servicio6.png']
-      },
-      {
-        id: 7,
-        name: 'Mascarilla',
-        description: 'Se emplea para hidratar, purificar e iluminar tu cara.',
-        price: 70,
-        duration: 20,
-        images: ['assets/img/servicio7.png']
+      error: (err) => {
+        console.error('Error fetching products:', err);
       }
-    ];
+    });
   }
 
   // Método para abrir el explorador de archivos al hacer clic en el botón de subir imágenes
@@ -122,7 +75,7 @@ export class ManageServicesComponent implements OnInit {
   openAddServiceModal() {
     this.isEditing = false;
     this.selectedImages = [];
-    this.currentService = { id: 0, name: '', description: '', price: 0, duration: 0 };
+    this.currentService = { idService: 0, name: '', description: '', price: 0, duration: 0, images: []};
     this.serviceForm.reset();
     this.tempImages = [];
 
@@ -191,7 +144,7 @@ export class ManageServicesComponent implements OnInit {
       };
 
       if (this.isEditing) {
-        const index = this.services.findIndex((s) => s.id === this.currentService.id);
+        const index = this.services.findIndex((s) => s.idService === this.currentService.idService);
         if (index !== -1) {
           this.services[index] = { ...this.currentService, ...serviceData };
         }
@@ -218,8 +171,16 @@ export class ManageServicesComponent implements OnInit {
 
   deleteService() {
     if (this.serviceToDelete) {
-      // Lógica para eliminar un servicio (sustituir cuando se consuma la API)
-      this.services = this.services.filter(s => s.id !== this.serviceToDelete?.id);
+      this.serviceService.deleteService(this.serviceToDelete.idService).subscribe({
+        next: () => {
+          this.services = this.services.filter(s => s.idService !== this.serviceToDelete!.idService);
+          this.serviceToDelete = null;
+          console.log('Servicio eliminado');
+        },
+        error: (error) => {
+          console.error('Error al eliminar el servicio', error);
+        }
+      });
     }
   }
 }

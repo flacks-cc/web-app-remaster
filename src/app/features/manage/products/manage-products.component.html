@@ -1,1 +1,243 @@
-<p>manage-products works!</p>
+<div class="container mt-3 px-4">
+    <!-- Título y botón para agregar nuevo producto -->
+    <div class="container bg-dark text-white d-flex justify-content-between align-items-center rounded p-3 mb-3">
+        <h4 class="m-0 fw-bold">Administrar productos</h4>
+        <button class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#serviceModal"
+            (click)="openAddProductModal()">
+            <i class="bi bi-plus-circle"></i>
+        </button>
+    </div>
+
+    <!-- Tabla de productos -->
+    <div class="table-responsive rounded">
+        <table class="table table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th class="text-center align-middle px-4 text-nowrap-small">ID</th>
+                    <th class="align-middle text-nowrap-small">Nombre del servicio</th>
+                    <th class="align-middle text-nowrap-small">Marca</th>
+                    <th class="align-middle text-nowrap-small">Descripción</th>
+                    <th class="text-center align-middle px-4 text-nowrap-small">Precio</th>
+                    <th class="text-center align-middle px-4 text-nowrap-small">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (product of products; track $index) {
+                <tr>
+                    <td class="text-center align-middle text-nowrap-small">{{ product.idProduct }}</td>
+                    <td class="text-start align-middle text-nowrap-small">{{ product.name }}</td>
+                    <td class="text-start align-middle text-nowrap-small">{{ product.brand }}</td>
+                    <td class="text-start align-middle text-nowrap-small">{{ product.description }}</td>
+                    <td class="text-center align-middle text-nowrap-small">${{ product.price }}</td>
+                    <td class="text-center align-middle text-nowrap-small">
+                        <button class="btn btn-primary btn-sm me-1" data-bs-toggle="modal"
+                            data-bs-target="#serviceModal" (click)="openEditProductModal(product)">
+                            <i class="bi bi-pencil-fill"></i>
+                        </button>
+                        <button class="btn btn-danger btn-sm" data-bs-toggle="modal"
+                            data-bs-target="#deleteServiceModal" (click)="confirmDeleteProduct(product)">
+                            <i class="bi bi-trash3-fill"></i>
+                        </button>
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal para agregar/editar producto -->
+<div class="modal fade" id="serviceModal" tabindex="-1" aria-labelledby="serviceModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{ isEditing ? 'Editar producto' : 'Agregar producto' }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <!-- Formulario de producto -->
+                <form [formGroup]="productForm" (ngSubmit)="saveProduct()">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Nombre del producto</label>
+                        <div class="input-group">
+                            <span class="input-group-text"
+                                [class.border-danger]="productForm.get('name')?.invalid && (productForm.get('name')?.dirty || productForm.get('name')?.touched)">
+                                <i class="bi bi-tag"></i></span>
+                            <input type="text" class="form-control" id="name" formControlName="name"
+                                [class.is-invalid]="productForm.get('name')?.invalid && (productForm.get('name')?.dirty || productForm.get('name')?.touched)"
+                                placeholder="Nombre del producto" required>
+                        </div>
+                        @if (productForm.get('name')?.invalid && (productForm.get('name')?.dirty ||
+                        productForm.get('name')?.touched)) {
+                        <div class="my-3">
+                            @if (productForm.hasError('required', 'name')) {
+                            <small class="text-danger">El nombre del producto es obligatorio. </small>
+                            }
+                            @if (productForm.hasError('minlength', 'name')) {
+                            <small class="text-danger">El nombre del producto debe ser mayor a 3 caracteres. </small>
+                            }
+                            @if (productForm.hasError('maxlength', 'name')) {
+                            <small class="text-danger">El nombre del producto debe ser menor a 100 caracteres.
+                            </small>
+                            }
+                        </div>
+                        }
+                    </div>
+                    <div class="mb-3">
+                        <label for="brand" class="form-label">Marca</label>
+                        <div class="input-group">
+                            <span class="input-group-text"
+                                [class.border-danger]="productForm.get('brand')?.invalid && (productForm.get('brand')?.dirty || productForm.get('brand')?.touched)">
+                                <i class="bi bi-pencil"></i>
+                            </span>
+                            <input class="form-control" id="brand" formControlName="brand"
+                                [class.is-invalid]="productForm.get('brand')?.invalid && (productForm.get('brand')?.dirty || productForm.get('brand')?.touched)"
+                                rows="1" placeholder="Marca del producto" required>
+                        </div>
+                        @if (productForm.get('brand')?.invalid && (productForm.get('brand')?.dirty ||
+                        productForm.get('brand')?.touched)) {
+                        <div class="my-3">
+                            @if (productForm.hasError('required', 'brand')) {
+                            <small class="text-danger">La marca del producto es obligatoria.</small>
+                            }
+                            @if (productForm.hasError('minlength', 'brand')) {
+                            <small class="text-danger">La marca del producto debe ser mayor a 3 caracteres.</small>
+                            }
+                            @if (productForm.hasError('maxlength', 'brand')) {
+                            <small class="text-danger">La marca del producto debe ser menor a 100 caracteres.</small>
+                            }
+                        </div>
+                        }
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Descripción</label>
+                        <div class="input-group">
+                            <span class="input-group-text"
+                                [class.border-danger]="productForm.get('description')?.invalid && (productForm.get('description')?.dirty || productForm.get('description')?.touched)">
+                                <i class="bi bi-pencil"></i></span>
+                            <textarea class="form-control" id="description" formControlName="description"
+                                [class.is-invalid]="productForm.get('description')?.invalid && (productForm.get('description')?.dirty || productForm.get('description')?.touched)"
+                                rows="1" placeholder="Descripción del producto" required></textarea>
+                        </div>
+                        @if (productForm.get('description')?.invalid && (productForm.get('description')?.dirty ||
+                        productForm.get('description')?.touched)) {
+                        <div class="my-3">
+                            @if (productForm.hasError('required', 'description')) {
+                            <small class="text-danger">La descripción del producto es obligatoria. </small>
+                            }
+                            @if (productForm.hasError('minlength', 'description')) {
+                            <small class="text-danger">La descripción del producto debe ser mayor a 3 caracteres.
+                            </small>
+                            }
+                            @if (productForm.hasError('maxlength', 'description')) {
+                            <small class="text-danger">La descripción del producto debe ser menor a 255 caracteres.
+                            </small>
+                            }
+                        </div>
+                        }
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="price" class="form-label">Precio</label>
+                            <div class="input-group">
+                                <span class="input-group-text"
+                                    [class.border-danger]="productForm.get('price')?.invalid && (productForm.get('price')?.dirty || productForm.get('price')?.touched)">
+                                    <i class="bi bi-currency-dollar"></i></span>
+                                <input type="number" class="form-control" id="price" formControlName="price"
+                                    [class.is-invalid]="productForm.get('price')?.invalid && (productForm.get('price')?.dirty || productForm.get('price')?.touched)"
+                                    placeholder="Precio del servicio">
+                            </div>
+                            @if (productForm.get('price')?.invalid && (productForm.get('price')?.dirty ||
+                            productForm.get('price')?.touched)) {
+                            <div class="my-3">
+                                @if (productForm.hasError('min', 'price')) {
+                                <small class="text-danger">El precio debe ser mayor a 0 pesos. </small>
+                                }
+                            </div>
+                            }
+                        </div>
+                    </div>
+                    <div>
+                        <label for="serviceImages" class="form-label">Gestionar imágenes</label>
+                        <div class="d-flex">
+                            <input class="form-control d-none" type="file" id="serviceImages"
+                                (change)="onFilesSelected($event)" multiple>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="input-group pointer" (click)="triggerFileInput()">
+                                    <span class="input-group-text" title="Subir imágenes"><i
+                                            class="bi bi-arrow-up-circle"></i></span>
+                                    <input readonly class="form-control pointer" placeholder="Subir imágenes">
+                                </div>
+                            </div>
+                            @if (tempImages.length > 0) {
+                            <div class="col-md-6">
+                                <div class="input-group pointer" [class.pointer]="selectedImages.length > 0"
+                                    (click)="removeSelectedImages()">
+                                    <span class="input-group-text" title="Eliminar imágenes seleccionadas"><i
+                                            class="bi bi-trash3"></i></span>
+                                    <input readonly class="form-control pointer"
+                                        placeholder="Eliminar imágenes selecionadas"
+                                        [class.pointer]="selectedImages.length > 0"
+                                        [disabled]="selectedImages.length === 0">
+                                </div>
+                            </div>
+                            }
+                        </div>
+                    </div>
+
+                    @if (tempImages.length > 0) {
+                    <div class="row row-cols-3 g-2 mt-3">
+                        @for (preview of tempImages; track $index) {
+                        <div class="col">
+                            <div class="position-relative">
+                                <img [src]="preview" alt="Vista previa de la imagen"
+                                    class="img-fluid w-100 h-100 object-fit-cover pointer"
+                                    (mousedown)="selectImage($index, $event)">
+                                <input type="checkbox" [checked]="selectedImages.includes($index)"
+                                    (change)="toggleSelection($index)"
+                                    class="form-check-input position-absolute z-3 bottom-0 end-0 m-2">
+                            </div>
+                        </div>
+                        }
+                    </div>
+                    }
+                    <button class="d-none" type="submit" id="btnSubmit"></button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn" data-bs-dismiss="modal" (click)="triggerSubmit()"
+                    [attr.data-bs-dismiss]="productForm.valid ? 'modal' : null"
+                    [ngClass]="isEditing ? 'btn-primary' : 'btn-success'">
+                    {{ isEditing ? 'Editar' : 'Guardar' }}
+                </button>
+                @if (errorMessage) {
+                <small class="text-danger mt-3">{{ errorMessage }}</small>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para eliminar producto -->
+<div class="modal fade" id="deleteServiceModal" tabindex="-1" aria-labelledby="deleteServiceModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteServiceModalLabel">Confirmar Eliminación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                ¿Estás seguro de que deseas eliminar este producto?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" (click)="deleteProduct()">Eliminar</button>
+            </div>
+        </div>
+    </div>
+</div>

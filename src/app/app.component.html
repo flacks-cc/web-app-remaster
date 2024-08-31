@@ -1,36 +1,36 @@
 <body class="d-flex flex-column min-vh-100">
   @if (!isLoginRoute() && !isManageRoute()) {
-    <app-navbar></app-navbar>
+  <app-navbar></app-navbar>
   }
 
   <div class="container-fluid h-100 d-flex flex-column p-0 overflow-hidden">
     @if (isManageRoute()) {
-      <div class="row flex-grow-1">
-        <!-- Sidebar -->
-        <div class="col-2 d-flex flex-column position-fixed h-100 p-0">
-          <app-sidebar></app-sidebar>
-        </div>
-        
-        <!-- Main Content Area -->
-        <div class="col-10 offset-2 d-flex flex-column flex-grow-1 p-0">
-          <div class="container-fluid d-flex flex-column flex-grow-1 overflow-auto p-0">
-            <router-outlet></router-outlet>
-          </div>
+    <div class="row flex-grow-1">
+      <!-- Sidebar -->
+      <div class="col-2 d-flex flex-column position-fixed h-100 p-0">
+        <app-sidebar></app-sidebar>
+      </div>
+
+      <!-- Main Content Area -->
+      <div class="col-10 offset-2 d-flex flex-column flex-grow-1 p-0">
+        <div class="container-fluid d-flex flex-column flex-grow-1 overflow-auto p-0">
+          <router-outlet></router-outlet>
         </div>
       </div>
+    </div>
     } @else {
-      <div class="row flex-grow-1">
-        <!-- Main Content Area -->
-        <div class="col-12 d-flex flex-column flex-grow-1 p-0">
-          <div class="container-fluid d-flex flex-column flex-grow-1 overflow-auto p-0">
-            <router-outlet></router-outlet>
-          </div>
+    <div class="row flex-grow-1">
+      <!-- Main Content Area -->
+      <div class="col-12 d-flex flex-column flex-grow-1 p-0">
+        <div class="container-fluid d-flex flex-column flex-grow-1 overflow-auto p-0">
+          <router-outlet></router-outlet>
         </div>
       </div>
+    </div>
     }
 
     @if (!isLoginRoute() && !isManageRoute()) {
-      <app-footer class="mt-auto"></app-footer>
+    <app-footer class="mt-auto"></app-footer>
     }
   </div>
 </body>
