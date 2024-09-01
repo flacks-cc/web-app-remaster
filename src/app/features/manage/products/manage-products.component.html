@@ -13,12 +13,12 @@
         <table class="table table-striped">
             <thead class="table-dark">
                 <tr>
-                    <th class="text-center align-middle px-4 text-nowrap-small">ID</th>
-                    <th class="align-middle text-nowrap-small">Nombre del servicio</th>
-                    <th class="align-middle text-nowrap-small">Marca</th>
-                    <th class="align-middle text-nowrap-small">Descripción</th>
-                    <th class="text-center align-middle px-4 text-nowrap-small">Precio</th>
-                    <th class="text-center align-middle px-4 text-nowrap-small">Acciones</th>
+                    <th class="col-md-1 text-center align-middle px-4 text-nowrap-small">ID</th>
+                    <th class="col-md-2 align-middle text-nowrap-small">Nombre del producto</th>
+                    <th class="col-md-1 align-middle text-nowrap-small">Marca</th>
+                    <th class="col-md-6 align-middle text-nowrap-small">Descripción</th>
+                    <th class="col-md-1 text-center align-middle px-4 text-nowrap-small">Precio</th>
+                    <th class="col-md-1 text-center align-middle px-4 text-nowrap-small">Acciones</th>
                 </tr>
             </thead>
             <tbody>
@@ -65,7 +65,7 @@
                                 <i class="bi bi-tag"></i></span>
                             <input type="text" class="form-control" id="name" formControlName="name"
                                 [class.is-invalid]="productForm.get('name')?.invalid && (productForm.get('name')?.dirty || productForm.get('name')?.touched)"
-                                placeholder="Nombre del producto" required>
+                                placeholder="Nombre del producto" maxlength="100" required>
                         </div>
                         @if (productForm.get('name')?.invalid && (productForm.get('name')?.dirty ||
                         productForm.get('name')?.touched)) {
@@ -92,7 +92,7 @@
                             </span>
                             <input class="form-control" id="brand" formControlName="brand"
                                 [class.is-invalid]="productForm.get('brand')?.invalid && (productForm.get('brand')?.dirty || productForm.get('brand')?.touched)"
-                                rows="1" placeholder="Marca del producto" required>
+                                rows="1" placeholder="Marca del producto" maxlength="100" required>
                         </div>
                         @if (productForm.get('brand')?.invalid && (productForm.get('brand')?.dirty ||
                         productForm.get('brand')?.touched)) {
@@ -117,7 +117,7 @@
                                 <i class="bi bi-pencil"></i></span>
                             <textarea class="form-control" id="description" formControlName="description"
                                 [class.is-invalid]="productForm.get('description')?.invalid && (productForm.get('description')?.dirty || productForm.get('description')?.touched)"
-                                rows="1" placeholder="Descripción del producto" required></textarea>
+                                rows="2" placeholder="Descripción del producto" maxlength="255" required></textarea>
                         </div>
                         @if (productForm.get('description')?.invalid && (productForm.get('description')?.dirty ||
                         productForm.get('description')?.touched)) {
@@ -145,7 +145,7 @@
                                     <i class="bi bi-currency-dollar"></i></span>
                                 <input type="number" class="form-control" id="price" formControlName="price"
                                     [class.is-invalid]="productForm.get('price')?.invalid && (productForm.get('price')?.dirty || productForm.get('price')?.touched)"
-                                    placeholder="Precio del servicio">
+                                    placeholder="Precio del producto" appLimitDigits="4">
                             </div>
                             @if (productForm.get('price')?.invalid && (productForm.get('price')?.dirty ||
                             productForm.get('price')?.touched)) {
@@ -158,7 +158,7 @@
                         </div>
                     </div>
                     <div>
-                        <label for="serviceImages" class="form-label">Gestionar imágenes</label>
+                        <label for="productImages" class="form-label">Gestionar imágenes</label>
                         <div class="d-flex">
                             <input class="form-control d-none" type="file" id="productImages"
                             (change)="onFilesSelected($event)" multiple>

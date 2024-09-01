@@ -4,11 +4,12 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { NgClass } from '@angular/common';
 import { ServiceService } from '../../../core/services/service.service';
 import { Modal } from 'bootstrap';
+import { LimitDigitsDirective } from '../../../shared/directives/limit-digits.directive';
 
 @Component({
   selector: 'app-manage-services',
   standalone: true,
-  imports: [ReactiveFormsModule, NgClass],
+  imports: [ReactiveFormsModule, NgClass, LimitDigitsDirective],
   templateUrl: './manage-services.component.html',
   styleUrl: './manage-services.component.css'
 })
@@ -32,7 +33,7 @@ export class ManageServicesComponent implements OnInit {
   ) {
     this.serviceForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
-      description: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(255)]],
+      description: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(254)]],
       price: ['', [Validators.min(0)]],
       duration: ['', [Validators.min(0)]],
       images: [[]]

@@ -5,11 +5,12 @@ import { ProductService } from '../../../core/services/product.service';
 import { NgClass } from '@angular/common';
 import { Router } from '@angular/router';
 import { Modal } from 'bootstrap';
+import { LimitDigitsDirective } from '../../../shared/directives/limit-digits.directive';
 
 @Component({
   selector: 'app-manage-products',
   standalone: true,
-  imports: [ReactiveFormsModule, NgClass],
+  imports: [ReactiveFormsModule, NgClass, LimitDigitsDirective],
   templateUrl: './manage-products.component.html',
   styleUrls: ['./manage-products.component.css']
 })
@@ -35,7 +36,7 @@ export class ManageProductsComponent implements OnInit {
     this.productForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
       brand: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
-      description: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(255)]],
+      description: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(254)]],
       price: ['', [Validators.required, Validators.min(0)]],
       images: [[]]
     });

@@ -8,9 +8,9 @@ import { Service } from '../models/service.model';
 })
 export class ServiceService {
 
-  constructor(private httpClient: HttpClient) {}
-
   private URL = 'http://localhost:8080/api/v1/services';
+
+  constructor(private httpClient: HttpClient) {}
 
   getAllServices(): Observable<Service[]> {
     return this.httpClient.get<Service[]>(`${this.URL}`)
@@ -27,5 +27,4 @@ export class ServiceService {
   deleteService(id: number): Observable<Service> {
     return this.httpClient.delete<Service>(`${this.URL}/${id}`)
   }
-
 }
