@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Product, Image } from '../../../core/models/product.model';
+import type { Product, Image } from '../../../core/models/product.model';
 import { ProductService } from '../../../core/services/product.service';
 import { NgClass } from '@angular/common';
 import { Router } from '@angular/router';
@@ -24,6 +24,8 @@ export class ManageProductsComponent implements OnInit {
   productToDelete: Product | null = null;
   errorMessage: string = '';
   isLoading: boolean = false;
+  imageUploadError: boolean = false;
+  imageUploadErrorMessage?: string;
 
   private productModal: Modal | null = null;
   private deleteProductModal: Modal | null = null;
@@ -95,19 +97,51 @@ export class ManageProductsComponent implements OnInit {
 
   onFilesSelected(event: Event) {
     const input = event.target as HTMLInputElement;
+    const allowedFormats = ['image/jpg', 'image/png'];
+    const maxSizeInMB = 5;
+    const maxSizeInBytes = maxSizeInMB * 1024 * 1024;
+    const maxWidth = 300;
+    const maxHeight = 300;
+
     if (input.files) {
       Array.from(input.files).forEach((file) => {
-        const reader = new FileReader();
-        reader.onload = () => {
-          if (typeof reader.result === 'string' && !this.tempImages.includes(reader.result)) {
-            this.tempImages.push(reader.result);
+        if (!allowedFormats.includes(file.type)) {
+          this.imageUploadError = true;
+          this.imageUploadErrorMessage = `Formato no permitido: ${file.type}. Solo se permiten JPG y PNG.`;
+          return;
+        }
+
+        if (file.size > maxSizeInBytes) {
+          this.imageUploadError = true;
+          this.imageUploadErrorMessage = `El archivo ${file.name} es demasiado grande. El tamaño máximo permitido es ${maxSizeInMB} MB.`;
+          return;
+        }
+
+        const img = new Image();
+        img.onload = () => {
+          if (img.width > maxWidth || img.height > maxHeight) {
+            this.imageUploadError = true;
+            this.imageUploadErrorMessage = `La imagen ${file.name} excede las dimensiones máximas permitidas de ${maxWidth}x${maxHeight} píxeles.`;
+          } else {
+            this.imageUploadError = false;
+            this.imageUploadErrorMessage = '';
+
+            const reader = new FileReader();
+            reader.onload = () => {
+              if (typeof reader.result === 'string' && !this.tempImages.includes(reader.result)) {
+                this.tempImages.push(reader.result);
+              }
+            };
+            reader.readAsDataURL(file);
           }
         };
-        reader.readAsDataURL(file);
+        img.src = URL.createObjectURL(file);
       });
       input.value = '';
     }
   }
+
+
 
   triggerFileInput() {
     const fileInput = document.getElementById('productImages') as HTMLInputElement;

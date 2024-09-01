@@ -161,7 +161,7 @@
                         <label for="productImages" class="form-label">Gestionar imágenes</label>
                         <div class="d-flex">
                             <input class="form-control d-none" type="file" id="productImages"
-                            (change)="onFilesSelected($event)" multiple>
+                                (change)="onFilesSelected($event)" multiple>
                         </div>
 
                         <div class="row">
@@ -172,6 +172,7 @@
                                     <input readonly class="form-control pointer" placeholder="Subir imágenes">
                                 </div>
                             </div>
+
                             @if (tempImages.length > 0) {
                             <div class="col-md-6">
                                 <div class="input-group pointer" [class.pointer]="selectedImages.length > 0"
@@ -187,7 +188,9 @@
                             }
                         </div>
                     </div>
-
+                    @if (imageUploadError) {
+                        <small class="text-danger my-3">{{ imageUploadErrorMessage }}</small>
+                    }
                     @if (tempImages.length > 0) {
                     <div class="row row-cols-3 g-2 mt-3">
                         @for (preview of tempImages; track $index) {
@@ -209,13 +212,13 @@
             </div>
             <div class="modal-footer">
                 @if (errorMessage) {
-                    <div class="text-danger mt-3" style="text-align: left; font-weight: normal;">{{ errorMessage }}</div>
+                <div class="text-danger mt-3" style="text-align: left; font-weight: normal;">{{ errorMessage }}</div>
                 }
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                 <button type="submit" class="btn" (click)="triggerSubmit()"
                     [ngClass]="isEditing ? 'btn-primary' : 'btn-success'">
                     {{ isEditing ? 'Editar' : 'Guardar' }}
-                </button>    
+                </button>
             </div>
         </div>
     </div>

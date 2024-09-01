@@ -180,7 +180,9 @@
                             }
                         </div>
                     </div>
-
+                    @if (imageUploadError) {
+                        <small class="text-danger my-3">{{ imageUploadErrorMessage }}</small>
+                    }
                     @if (tempImages.length > 0) {
                     <div class="row row-cols-3 g-2 mt-3">
                         @for (preview of tempImages; track $index) {
