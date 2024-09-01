@@ -25,7 +25,7 @@
                 <form [formGroup]="loginForm" (ngSubmit)="logIn()">
                     <div class="input-group mb-3">
                         <span class="input-group-text"
-                        [class.border-danger]="loginForm.get('email')?.invalid && (loginForm.get('email')?.dirty || loginForm.get('email')?.touched)">
+                            [class.border-danger]="loginForm.get('email')?.invalid && (loginForm.get('email')?.dirty || loginForm.get('email')?.touched)">
                             <i class="bi bi-envelope"></i>
                         </span>
                         <input formControlName="email" type="email" class="form-control form-control-lg fs-6"
@@ -41,14 +41,11 @@
                         @if (loginForm.hasError('email', 'email')) {
                         <small class="text-danger">El correo no es válido. </small>
                         }
-                        @if (loginForm.hasError('emailDomain', 'email')) {
-                        <small class="text-danger">El correo no pertenece al dominio Pepsico. </small>
-                        }
                     </div>
                     }
                     <div class="input-group mb-3">
                         <span class="input-group-text"
-                        [class.border-danger]="loginForm.get('password')?.invalid && (loginForm.get('password')?.dirty || loginForm.get('password')?.touched)">
+                            [class.border-danger]="loginForm.get('password')?.invalid && (loginForm.get('password')?.dirty || loginForm.get('password')?.touched)">
                             <i class="bi bi-lock"></i>
                         </span>
                         <input formControlName="password" type="password" class="form-control form-control-lg fs-6"
@@ -69,15 +66,17 @@
                     <div class="input-group mb-3 d-flex justify-content-between">
                         <div class="form-check">
                             <div class="dropdown dropdown-hover">
-                                <input type="checkbox" formControlName="rememberMe"
-                                    class="form-check-input" id="rememberMe">
-                                    @if (loginForm.get('rememberMe')?.value === false) {
-                                        <div class="dropdown-menu p-3">
-                                            <p class="small m-0">Mantén tu sesión activa por 30 min, incluso si cierras el
-                                                navegador. Sin esta opción, debes iniciar sesión de nuevo si cierras el
-                                                navegador.</p>
-                                        </div>
-                                    }
+                                <input type="checkbox" formControlName="rememberMe" class="form-check-input"
+                                    id="rememberMe">
+                                @if (loginForm.get('rememberMe')?.value === false) {
+                                <div class="dropdown-menu p-3">
+                                    <p class="small m-0">
+                                        Mantén tu sesión activa por 30 min, incluso si cierras el
+                                        navegador. Sin esta opción, debes iniciar sesión de nuevo si cierras el
+                                        navegador.
+                                    </p>
+                                </div>
+                                }
                             </div>
                             <label for="rememberMe"
                                 class="form-check-label text-secondary"><small>Recuérdame</small></label>
@@ -86,12 +85,12 @@
                     <button type="submit" class="btn btn-warning btn-md w-100 mb-3">Iniciar sesión</button>
                     <div class="mb-3">
                         @if (errorMessage) {
-                            <small class="text-danger">{{ errorMessage }}</small>
+                        <small class="text-danger">{{ errorMessage }}</small>
                         }
                     </div>
                 </form>
                 <!--/ Form -->
-                
+
                 <!-- Divider -->
                 <div class="position-relative">
                     <hr class="text-secondary divider">
@@ -103,7 +102,7 @@
                     <small>¿Solo eres cliente? <a class="text-decoration-none link-opacity-100-hover"
                             routerLink="/home">Volver al inicio</a></small>
                 </div>
-                
+
             </div>
         </div>
     </div>

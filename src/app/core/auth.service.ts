@@ -1,77 +1,62 @@
-// import { Injectable, inject } from '@angular/core';
-// import { HttpClient, HttpParams } from '@angular/common/http';
-// import { Observable, tap } from 'rxjs';
-// import { UserLogin } from './models/user/user-login.model';
-// import { NewUser } from './models/user/new-user.model';
-// import { JwtDto } from './models/auth/jwt-dto.model';
+import { HttpClient, HttpParams } from "@angular/common/http";
+import { inject, Injectable } from "@angular/core";
+import { Observable, tap } from "rxjs";
+import { UserLogin } from "./models/user/user-login.model";
+import { JwtDto } from "./models/auth/jwt-dto.model";
 
-// @Injectable({
-//   providedIn: 'root'
-// })
-// export class AuthService {
+@Injectable({
+  providedIn: 'root'
+})
+export class AuthService {
+  private URL = 'http://localhost:8080/api/v1/users';
+  private _http = inject(HttpClient);
 
-//   private baseUrl = 'http://localhost:8080/api/v1/auth';
-//   private _http = inject(HttpClient);
+  // Método de inicio de sesión
+  login(userLogin: UserLogin, rememberMe: boolean = false): Observable<JwtDto> {
+    return this._http.post<JwtDto>(`${this.URL}/login`, userLogin).pipe(
+      tap(jwt => this.setToken(jwt.token, rememberMe))
+    );
+  }
 
-//   register(newUser: NewUser): Observable<any> {
-//     return this._http.post<any>(`${this.baseUrl}/register`, newUser);
-//   }
+  // Método para restablecer contraseña
+  resetPassword(email: string, newPassword: string): Observable<any> {
+    const params = new HttpParams()
+      .set('email', email)
+      .set('newPassword', newPassword);
+    return this._http.post(`${this.URL}/password/reset/${email}`, {}, { params });
+  }
 
-//   login(userLogin: UserLogin, rememberMe: boolean = false): Observable<JwtDto> {
-//     return this._http.post<JwtDto>(`${this.baseUrl}/login`, userLogin).pipe(
-//       tap(jwt => {
-//         this.setToken(jwt.token, rememberMe);
-//       })
-//     );
-//   }
+  // Métodos de verificación de código
+  verifyInfoCode(code: string): Observable<any> {
+    return this._http.get(`${this.URL}/verification/info-code`, { params: new HttpParams().set('code', code) });
+  }
 
-//   resetPassword(email: string, newPassword: string): Observable<any> {
-//     const params = new HttpParams()
-//       .set('email', email)
-//       .set('newPassword', newPassword);
+  verifyPasswordCode(code: string): Observable<any> {
+    return this._http.get(`${this.URL}/verification/password-code`, { params: new HttpParams().set('code', code) });
+  }
 
-//     return this._http.post(`${this.baseUrl}/password/reset/${email}`, {}, { params });
-//   }
+  // Método para enviar código de verificación
+  sendVerificationCode(email: string): Observable<any> {
+    return this._http.post(`${this.URL}/verification/send-code`, {}, { params: new HttpParams().set('email', email) });
+  }
 
-//   verifyInfoCode(code: string): Observable<any> {
-//     const params = new HttpParams().set('code', code);
-//     return this._http.get(`${this.baseUrl}/verification/info-code`, { params });
-//   }
+  // Método para verificar si el usuario está autenticado
+  isAuthenticated(): boolean {
+    return !!localStorage.getItem('authToken') || !!sessionStorage.getItem('authToken');
+  }
 
-//   verifyPasswordCode(code: string): Observable<any> {
-//     const params = new HttpParams().set('code', code);
-//     return this._http.get(`${this.baseUrl}/verification/password-code`, { params });
-//   }
+  // Método para cerrar sesión
+  logout(): void {
+    localStorage.removeItem('authToken');
+    sessionStorage.removeItem('authToken');
+  }
 
-//   sendVerificationCode(email: string): Observable<any> {
-//     const params = new HttpParams().set('email', email);
-//     return this._http.post(`${this.baseUrl}/verification/send-code`, {}, { params });
-//   }
-
-//   // Método para verificar si el usuario está autenticado
-//   isAuthenticated(): boolean {
-//     const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
-//     return !!token;
-//   }
-
-//   // Método para cerrar sesión
-//   logout(): Observable<void> {
-//     localStorage.removeItem('authToken');
-//     sessionStorage.removeItem('authToken');
-//     return new Observable<void>(observer => {
-//       observer.next();
-//       observer.complete();
-//     });
-//   }
-
-//   // Método para guardar el token en el almacenamiento local o de sesión
-//   private setToken(token: string, rememberMe: boolean): void {
-//     if (rememberMe) {
-//       console.log('Guardando token en el almacenamiento local');
-//       localStorage.setItem('authToken', token);
-//     } else {
-//       console.log('Guardando token en el almacenamiento de sesión');
-//       sessionStorage.setItem('authToken', token);
-//     }
-//   }
-// }
+  // Método para guardar el token en el almacenamiento local o de sesión
+  private setToken(token: string, rememberMe: boolean): void {
+    if (rememberMe) {
+      localStorage.setItem('authToken', token);
+    } else {
+      sessionStorage.setItem('authToken', token);
+    }
+  }
+}
