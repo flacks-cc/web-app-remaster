@@ -30,7 +30,7 @@ export class ManageProductsComponent implements OnInit {
   private _fb = inject(FormBuilder);
 
   constructor() {
-    this.productForm = this.fb.group({
+    this.productForm = this._fb.group({
       name: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
       brand: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
       description: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(254)]],
@@ -236,7 +236,7 @@ export class ManageProductsComponent implements OnInit {
         if (this.imageUploadError.length === 0) {
           this.isLoading = true;
           if (this.isEditing && this.currentProduct.idProduct) {
-            this.productService.updateProduct(this.currentProduct.idProduct, formData).subscribe({
+            this._productService.updateProduct(this.currentProduct.idProduct, formData).subscribe({
               next: (response) => {
                 console.log('Producto actualizado exitosamente', response);
                 this.loadInitialData();
@@ -250,7 +250,7 @@ export class ManageProductsComponent implements OnInit {
               }
             });
           } else {
-            this.productService.createProduct(formData).subscribe({
+            this._productService.createProduct(formData).subscribe({
               next: (response) => {
                 console.log('Producto creado exitosamente', response);
                 this.loadInitialData();

@@ -25,12 +25,13 @@ export class ManageServicesComponent implements OnInit {
   isLoading: boolean = false;
   imageUploadError: { name: string; error: string }[] = [];
 
+  
+  private _toastService = inject(ToastService);
+  private _serviceService = inject(ServiceService);
+  private _fb = inject(FormBuilder);
 
-  constructor(
-    private fb: FormBuilder,
-    private serviceService: ServiceService
-  ) {
-    this.serviceForm = this.fb.group({
+  constructor() {
+    this.serviceForm = this._fb.group({
       name: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
       description: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(254)]],
       price: ['', [Validators.min(0)]],
@@ -233,7 +234,7 @@ export class ManageServicesComponent implements OnInit {
         if (this.imageUploadError.length === 0) {
           this.isLoading = true;
           if (this.isEditing && this.currentService.idService) {
-            this.serviceService.updateService(this.currentService.idService, formData).subscribe({
+            this._serviceService.updateService(this.currentService.idService, formData).subscribe({
               next: (response) => {
                 console.log('Producto actualizado exitosamente', response);
                 this.loadInitialData();
@@ -247,7 +248,7 @@ export class ManageServicesComponent implements OnInit {
               }
             });
           } else {
-            this.serviceService.createService(formData).subscribe({
+            this._serviceService.createService(formData).subscribe({
               next: (response) => {
                 console.log('Producto creado exitosamente', response);
                 this.loadInitialData();
