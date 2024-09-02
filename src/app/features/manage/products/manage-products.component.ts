@@ -79,15 +79,15 @@ export class ManageProductsComponent implements OnInit {
     const allowedFormats = ['image/jpg', 'image/png', 'image/jpeg', 'image/webp', 'image/heif'];
     const maxSizeInMB = 4;
     const maxSizeInBytes = maxSizeInMB * 1024 * 1024;
-
+  
     if (!input || !input.files) {
       return;
     }
-
+  
     const files = input.files;
     const newImageFiles = Array.from(files);
     const totalFiles = this.tempImages.length + newImageFiles.length;
-
+  
     if (totalFiles <= 6) {
       this.imageUploadError = [];
     } else {
@@ -98,7 +98,7 @@ export class ManageProductsComponent implements OnInit {
       input.value = '';
       return;
     }
-
+  
     newImageFiles.forEach((file) => {
       if (!allowedFormats.includes(file.type)) {
         this.imageUploadError.push({
@@ -107,7 +107,7 @@ export class ManageProductsComponent implements OnInit {
         });
         return;
       }
-
+  
       if (file.size > maxSizeInBytes) {
         this.imageUploadError.push({
           name: file.name,
@@ -115,21 +115,42 @@ export class ManageProductsComponent implements OnInit {
         });
         return;
       }
-
+  
       const reader = new FileReader();
       reader.onload = () => {
-        if (typeof reader.result === 'string' && !this.tempImages.includes(reader.result)) {
-          this.tempImages.push(reader.result);
+        if (typeof reader.result === 'string') {
+          this.resizeImage(reader.result, 800, 600, 1.0).then((resizedImage) => {
+            if (!this.tempImages.includes(resizedImage)) {
+              this.tempImages.push(resizedImage);
+            }
+          });
         }
       };
       reader.readAsDataURL(file);
     });
-
+  
     input.value = '';
   }
 
-
-
+  resizeImage(dataUrl: string, width: number, height: number, quality: number = 1.0): Promise<string> {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.src = dataUrl;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, width, height);
+          resolve(canvas.toDataURL('image/jpeg', quality));
+        }
+      };
+    });
+  }
+  
+  
+  
   triggerFileInput() {
     const fileInput = document.getElementById('productImages') as HTMLInputElement;
     if (fileInput) {
@@ -317,3 +338,4 @@ export class ManageProductsComponent implements OnInit {
     this.currentProduct = { idProduct: 0, name: '', brand: '', description: '', price: 0, images: [] };
   }
 }
+
