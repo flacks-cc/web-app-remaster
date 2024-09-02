@@ -1,8 +1,8 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { ReactiveFormsModule, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { RouterLink, Router } from '@angular/router';
-import { AuthService } from '../../core/auth.service';
-import { JwtDto } from '../../core/models/auth/jwt-dto.model';
+import { AuthenticationResponse } from '../../core/models/authentication-response.model';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -11,7 +11,7 @@ import { JwtDto } from '../../core/models/auth/jwt-dto.model';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   loginForm: FormGroup;
   errorMessage: string = '';
 
@@ -27,7 +27,13 @@ export class LoginComponent {
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    if (this._authService.isAuthenticated()) {
+      this._router.navigate(['/manage']);
+    } else {
+      this._authService.logout();
+    }
+  }
 
   logIn() {
     Object.values(this.loginForm.controls).forEach(control => {
@@ -39,8 +45,8 @@ export class LoginComponent {
       const rememberMe = this.loginForm.get('rememberMe')?.value || false;
 
       this._authService.login(userLogin, rememberMe).subscribe(
-        (jwtDto: JwtDto) => {
-          console.log('Usuario autenticado correctamente:', jwtDto);
+        (Token: AuthenticationResponse) => {
+          console.log('Usuario autenticado correctamente:', Token);
           this._router.navigate(['/manage']);
         },
         error => {
