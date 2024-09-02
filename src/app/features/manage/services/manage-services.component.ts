@@ -3,7 +3,6 @@ import type { Service, Image } from '../../../core/models/service.model';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgClass } from '@angular/common';
 import { ServiceService } from '../../../core/services/service.service';
-import { Modal } from 'bootstrap';
 import { LimitDigitsDirective } from '../../../shared/directives/limit-digits.directive';
 
 @Component({
@@ -26,9 +25,6 @@ export class ManageServicesComponent implements OnInit {
   imageUploadError: boolean = false;
   imageUploadErrorMessage?: string;
 
-  private serviceModal: Modal | null = null;
-  private deleteServiceModal: Modal | null = null;
-
   constructor(
     private fb: FormBuilder,
     private serviceService: ServiceService
@@ -44,19 +40,6 @@ export class ManageServicesComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadInitialData();
-    this.initializeModals();
-  }
-
-  private initializeModals(): void {
-    const serviceModalElement = document.getElementById('serviceModal');
-    if (serviceModalElement) {
-      this.serviceModal = new Modal(serviceModalElement);
-    }
-
-    const deleteServiceModalElement = document.getElementById('deleteServiceModal');
-    if (deleteServiceModalElement) {
-      this.deleteServiceModal = new Modal(deleteServiceModalElement);
-    }
   }
 
   loadInitialData() {
@@ -100,9 +83,6 @@ export class ManageServicesComponent implements OnInit {
   openAddServiceModal() {
     this.isEditing = false;
     this.resetModalState();
-    if (this.serviceModal) {
-      this.serviceModal.show();
-    }
   }
 
   openEditServiceModal(service: Service) {
@@ -110,9 +90,6 @@ export class ManageServicesComponent implements OnInit {
     this.currentService = { ...service };
     this.serviceForm.patchValue(service);
     this.tempImages = service.images ? service.images.map((img: any) => img.imageUrl) : [];
-    if (this.serviceModal) {
-      this.serviceModal.show();
-    }
   }
 
   onFilesSelected(event: Event) {
@@ -225,7 +202,7 @@ export class ManageServicesComponent implements OnInit {
               console.log('Servicio actualizado exitosamente', response);
               this.loadInitialData();
               this.isLoading = false;
-              this.closeModal();
+              this.resetModalState();
             },
             error: (error) => {
               console.error('Error al actualizar el servicio', error);
@@ -239,7 +216,7 @@ export class ManageServicesComponent implements OnInit {
               console.log('Servicio creado exitosamente', response);
               this.loadInitialData();
               this.isLoading = false;
-              this.closeModal();
+              this.resetModalState();
             },
             error: (error) => {
               console.error('Error al crear el servicio', error);
@@ -266,9 +243,6 @@ export class ManageServicesComponent implements OnInit {
 
   confirmDeleteService(service: Service) {
     this.serviceToDelete = service;
-    if (this.deleteServiceModal) {
-      this.deleteServiceModal.show();
-    }
   }
 
   deleteService() {
@@ -280,7 +254,7 @@ export class ManageServicesComponent implements OnInit {
           this.serviceToDelete = null;
           console.log('Servicio eliminado');
           this.isLoading = false;
-          this.closeDeleteModal();
+          this.resetModalState();
         },
         error: (error) => {
           console.error('Error al eliminar el servicio', error);
@@ -288,29 +262,6 @@ export class ManageServicesComponent implements OnInit {
           this.isLoading = false;
         }
       });
-    }
-  }
-
-  closeModal() {
-    if (this.serviceModal) {
-      this.serviceModal.hide();
-      document.body.classList.remove('modal-open');
-      const backdrop = document.getElementsByClassName('modal-backdrop')[0];
-      if (backdrop) {
-        backdrop.remove();
-      }
-    }
-    this.resetModalState();
-  }
-
-  closeDeleteModal() {
-    if (this.deleteServiceModal) {
-      this.deleteServiceModal.hide();
-      document.body.classList.remove('modal-open');
-      const backdrop = document.getElementsByClassName('modal-backdrop')[0];
-      if (backdrop) {
-        backdrop.remove();
-      }
     }
   }
 

@@ -2,7 +2,7 @@
     <!-- Título y botón para agregar nuevo producto -->
     <div class="container bg-dark text-white d-flex justify-content-between align-items-center rounded p-3 mb-3">
         <h4 class="m-0 fw-bold">Administrar productos</h4>
-        <button class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#serviceModal"
+        <button class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#EditOrAddproductModal"
             (click)="openAddProductModal()">
             <i class="bi bi-plus-circle"></i>
         </button>
@@ -13,7 +13,7 @@
         <table class="table table-striped">
             <thead class="table-dark">
                 <tr>
-                    <th class="col-md-1 text-center align-middle px-4 text-nowrap-small">ID</th>
+                    <th class="col-md-1 text-center align-middle px-4 text-nowrap-small" hidden>ID</th>
                     <th class="col-md-2 align-middle text-nowrap-small">Nombre del producto</th>
                     <th class="col-md-1 align-middle text-nowrap-small">Marca</th>
                     <th class="col-md-6 align-middle text-nowrap-small">Descripción</th>
@@ -24,18 +24,18 @@
             <tbody>
                 @for (product of products; track $index) {
                 <tr>
-                    <td class="text-center align-middle text-nowrap-small">{{ product.idProduct }}</td>
+                    <td class="text-center align-middle text-nowrap-small" hidden>{{ product.idProduct }}</td>
                     <td class="text-start align-middle text-nowrap-small">{{ product.name }}</td>
                     <td class="text-start align-middle text-nowrap-small">{{ product.brand }}</td>
                     <td class="text-start align-middle text-nowrap-small">{{ product.description }}</td>
                     <td class="text-center align-middle text-nowrap-small">${{ product.price }}</td>
                     <td class="text-center align-middle text-nowrap-small">
                         <button class="btn btn-primary btn-sm me-1" data-bs-toggle="modal"
-                            data-bs-target="#serviceModal" (click)="openEditProductModal(product)">
+                            data-bs-target="#EditOrAddproductModal" (click)="openEditProductModal(product)">
                             <i class="bi bi-pencil-fill"></i>
                         </button>
                         <button class="btn btn-danger btn-sm" data-bs-toggle="modal"
-                            data-bs-target="#deleteServiceModal" (click)="confirmDeleteProduct(product)">
+                            data-bs-target="#deleteProductModal" (click)="confirmDeleteProduct(product)">
                             <i class="bi bi-trash3-fill"></i>
                         </button>
                     </td>
@@ -47,7 +47,7 @@
 </div>
 
 <!-- Modal para agregar/editar producto -->
-<div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
+<div class="modal fade" id="EditOrAddproductModal" tabindex="-1" aria-labelledby="EditOrAddproductModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -215,7 +215,7 @@
                 <div class="text-danger mt-3" style="text-align: left; font-weight: normal;">{{ errorMessage }}</div>
                 }
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="submit" class="btn" (click)="triggerSubmit()"
+                <button type="submit" class="btn" data-bs-dismiss="modal" (click)="triggerSubmit()"
                     [ngClass]="isEditing ? 'btn-primary' : 'btn-success'">
                     {{ isEditing ? 'Editar' : 'Guardar' }}
                 </button>

@@ -4,7 +4,6 @@ import type { Product, Image } from '../../../core/models/product.model';
 import { ProductService } from '../../../core/services/product.service';
 import { NgClass } from '@angular/common';
 import { Router } from '@angular/router';
-import { Modal } from 'bootstrap';
 import { LimitDigitsDirective } from '../../../shared/directives/limit-digits.directive';
 
 @Component({
@@ -27,8 +26,6 @@ export class ManageProductsComponent implements OnInit {
   imageUploadError: boolean = false;
   imageUploadErrorMessage?: string;
 
-  private productModal: Modal | null = null;
-  private deleteProductModal: Modal | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -46,19 +43,6 @@ export class ManageProductsComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadInitialData();
-    this.initializeModals();
-  }
-
-  private initializeModals(): void {
-    const productModalElement = document.getElementById('productModal');
-    if (productModalElement) {
-      this.productModal = new Modal(productModalElement);
-    }
-
-    const deleteProductModalElement = document.getElementById('deleteProductModal');
-    if (deleteProductModalElement) {
-      this.deleteProductModal = new Modal(deleteProductModalElement);
-    }
   }
 
   loadInitialData() {
@@ -79,9 +63,6 @@ export class ManageProductsComponent implements OnInit {
   openAddProductModal() {
     this.isEditing = false;
     this.resetModalState();
-    if (this.productModal) {
-      this.productModal.show();
-    }
   }
 
   openEditProductModal(product: Product) {
@@ -90,9 +71,6 @@ export class ManageProductsComponent implements OnInit {
     this.productForm.patchValue(product);
     this.tempImages = product.images ? product.images.map((img: any) => img.imageUrl) : [];
     this.errorMessage = '';
-    if (this.productModal) {
-      this.productModal.show();
-    }
   }
 
   onFilesSelected(event: Event) {
@@ -140,8 +118,6 @@ export class ManageProductsComponent implements OnInit {
       input.value = '';
     }
   }
-
-
 
   triggerFileInput() {
     const fileInput = document.getElementById('productImages') as HTMLInputElement;
@@ -230,7 +206,8 @@ export class ManageProductsComponent implements OnInit {
               console.log('Producto actualizado exitosamente', response);
               this.loadInitialData();
               this.isLoading = false;
-              this.closeModal();
+              this.resetModalState();
+
             },
             error: (error) => {
               console.error('Error al actualizar el producto', error);
@@ -244,7 +221,7 @@ export class ManageProductsComponent implements OnInit {
               console.log('Producto creado exitosamente', response);
               this.loadInitialData();
               this.isLoading = false;
-              this.closeModal();
+              this.resetModalState();
             },
             error: (error) => {
               console.error('Error al crear el producto', error);
@@ -271,9 +248,6 @@ export class ManageProductsComponent implements OnInit {
 
   confirmDeleteProduct(product: Product) {
     this.productToDelete = product;
-    if (this.deleteProductModal) {
-      this.deleteProductModal.show();
-    }
   }
 
   deleteProduct() {
@@ -285,7 +259,7 @@ export class ManageProductsComponent implements OnInit {
           this.productToDelete = null;
           console.log('Producto eliminado');
           this.isLoading = false;
-          this.closeDeleteModal();
+          this.resetModalState();
         },
         error: (error) => {
           console.error('Error al eliminar el producto', error);
@@ -293,29 +267,6 @@ export class ManageProductsComponent implements OnInit {
           this.isLoading = false;
         }
       });
-    }
-  }
-
-  closeModal() {
-    if (this.productModal) {
-      this.productModal.hide();
-      document.body.classList.remove('modal-open');
-      const backdrop = document.getElementsByClassName('modal-backdrop')[0];
-      if (backdrop) {
-        backdrop.remove();
-      }
-    }
-    this.resetModalState();
-  }
-
-  closeDeleteModal() {
-    if (this.deleteProductModal) {
-      this.deleteProductModal.hide();
-      document.body.classList.remove('modal-open');
-      const backdrop = document.getElementsByClassName('modal-backdrop')[0];
-      if (backdrop) {
-        backdrop.remove();
-      }
     }
   }
 

@@ -5,6 +5,7 @@ import { ServicesComponent } from './features/services/services.component';
 import { LoginComponent } from './features/login/login.component';
 import { ManageProductsComponent } from './features/manage/products/manage-products.component';
 import { ManageServicesComponent } from './features/manage/services/manage-services.component';
+import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
     { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -15,7 +16,7 @@ export const routes: Routes = [
     // { path: 'contact-us', component: ContactUsComponent },
     { path: 'login', component: LoginComponent },
     {
-        path: 'manage',
+        path: 'manage', canActivate: [authGuard],
         children: [
             { path: '', redirectTo: 'services', pathMatch: 'full' },
             { path: 'services', component: ManageServicesComponent },

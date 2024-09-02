@@ -5,10 +5,12 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { catchError } from 'rxjs/operators';
 import { Observable, throwError } from 'rxjs';
 import { ToastService } from '../services/util/toast.service';
+import { AuthService } from '../services/auth.service';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const _router = inject(Router);
   const _toastService = inject(ToastService);
+  const _authService = inject(AuthService);
 
   // Intentar obtener el token desde localStorage o sessionStorage
   const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
@@ -29,11 +31,16 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         case 400:
           _toastService.showToast(
             'Solicitud incorrecta',
-            'Verifique su solicitud.'
+            'Verifique su solicitud.',
+            [
+              {
+                label: 'Ir al inicio de sesión',
+                onClick: () => _router.navigate(['/login']),
+              },
+            ]
           );
           break;
         case 401:
-          // Remover el token tanto de localStorage como de sessionStorage
           localStorage.removeItem('authToken');
           sessionStorage.removeItem('authToken');
           _toastService.showToast(
@@ -42,7 +49,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
             [
               {
                 label: 'Ir al inicio de sesión',
-                onClick: () => _router.navigate(['/auth/login']),
+                onClick: () => _router.navigate(['/login']),
               },
             ]
           );
@@ -50,25 +57,50 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         case 403:
           _toastService.showToast(
             'Acceso prohibido',
-            'No tiene permiso para realizar esta acción.'
+            'No tiene permiso para realizar esta acción.',
+            [
+              {
+                label: 'Ir al inicio de sesión',
+                onClick: () => _router.navigate(['/login']),
+              },
+            ]
           );
           break;
         case 404:
           _toastService.showToast(
             'Recurso no encontrado',
-            'El recurso que busca no existe.'
+            'El recurso que busca no existe.',
+            [
+              {
+                label: 'Ir al inicio de sesión',
+                onClick: () => _router.navigate(['/login']),
+              },
+            ]
           );
           break;
         case 500:
           _toastService.showToast(
             'Error interno del servidor',
             'Intente nuevamente más tarde o comuníquese con el administrador.'
+            ,
+            [
+              {
+                label: 'Ir al inicio de sesión',
+                onClick: () => _router.navigate(['/login']),
+              },
+            ]
           );
           break;
         default:
           _toastService.showToast(
             'Error inesperado',
-            'Intente nuevamente o comuníquese con el administrador.'
+            'Intente nuevamente o comuníquese con el administrador.',
+            [
+              {
+                label: 'Ir al inicio de sesión',
+                onClick: () => _router.navigate(['/login']),
+              },
+            ]
           );
           break;
       }
