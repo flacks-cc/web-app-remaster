@@ -4,6 +4,7 @@ import { Subject } from 'rxjs';
 export interface Toast {
     title: string;
     message: string;
+    type: 'success' | 'error';  // Añadido el tipo
     actions?: Array<{ label: string; onClick: () => void }>;
 }
 
@@ -21,6 +22,7 @@ export class ToastService {
     showToast(
         title: string,
         message: string,
+        type: 'success' | 'error',  // Añadido el tipo
         actions?: Array<{ label: string; onClick: () => void }>
     ): void {
         // Verifica si ya existe un toast con el mismo título y mensaje
@@ -29,7 +31,7 @@ export class ToastService {
         );
 
         if (!existingToast) {
-            const newToast = { title, message, actions };
+            const newToast = { title, message, type, actions };
             this.currentToasts.push(newToast);
             this.toastSubject.next(newToast);
         }

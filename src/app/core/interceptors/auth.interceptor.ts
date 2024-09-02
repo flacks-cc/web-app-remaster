@@ -5,12 +5,10 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { catchError } from 'rxjs/operators';
 import { Observable, throwError } from 'rxjs';
 import { ToastService } from '../services/util/toast.service';
-import { AuthService } from '../services/auth.service';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const _router = inject(Router);
   const _toastService = inject(ToastService);
-  const _authService = inject(AuthService);
 
   // Intentar obtener el token desde localStorage o sessionStorage
   const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
@@ -32,6 +30,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
           _toastService.showToast(
             'Solicitud incorrecta',
             'Verifique su solicitud.',
+            'error',
             [
               {
                 label: 'Ir al inicio de sesión',
@@ -46,6 +45,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
           _toastService.showToast(
             'Acceso denegado',
             'Inicie sesión nuevamente.',
+            'error',
             [
               {
                 label: 'Ir al inicio de sesión',
@@ -58,6 +58,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
           _toastService.showToast(
             'Acceso prohibido',
             'No tiene permiso para realizar esta acción.',
+            'error',
             [
               {
                 label: 'Ir al inicio de sesión',
@@ -70,6 +71,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
           _toastService.showToast(
             'Recurso no encontrado',
             'El recurso que busca no existe.',
+            'error',
             [
               {
                 label: 'Ir al inicio de sesión',
@@ -81,8 +83,8 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         case 500:
           _toastService.showToast(
             'Error interno del servidor',
-            'Intente nuevamente más tarde o comuníquese con el administrador.'
-            ,
+            'Intente nuevamente más tarde o comuníquese con el administrador.',
+            'error',
             [
               {
                 label: 'Ir al inicio de sesión',
@@ -95,6 +97,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
           _toastService.showToast(
             'Error inesperado',
             'Intente nuevamente o comuníquese con el administrador.',
+            'error',
             [
               {
                 label: 'Ir al inicio de sesión',

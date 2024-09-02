@@ -1,7 +1,7 @@
 <div class="toast-container position-fixed bottom-0 end-0 p-3">
     @for (toast of toasts; track $index) {
-        <div class="toast show border-danger" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-header bg-danger">
+        <div [class.border-danger]="toast.type == 'error'" [class.border-success]="toast.type == 'success'" class="toast show border-danger" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header bg-danger" [class.bg-danger]="toast.type == 'error'" [class.bg-success]="toast.type == 'success'">
                 <i class="bi bi-exclamation-circle text-white me-2"></i>
                 <p class="me-auto mb-0 text-white">{{ toast.title }}</p>
                 <button type="button" class="btn btn-sm p-0" (click)="removeToast(toast)"

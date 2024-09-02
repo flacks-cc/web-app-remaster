@@ -31,7 +31,7 @@
                     <td class="text-center align-middle text-nowrap-small">{{ service.duration }} min</td>
                     <td class="text-center align-middle text-nowrap-small">
                         <button class="btn btn-primary btn-sm me-1" data-bs-toggle="modal"
-                            data-bs-target="#serviceModal" (click)="openEditServiceModal(service)">
+                            data-bs-target="#EditOrAddServiceModal" (click)="openEditServiceModal(service)">
                             <i class="bi bi-pencil-fill"></i>
                         </button>
                         <button class="btn btn-danger btn-sm" data-bs-toggle="modal"
@@ -47,7 +47,8 @@
 </div>
 
 <!-- Modal para agregar/editar servicio -->
-<div class="modal fade" id="EditOrAddServiceModal" tabindex="-1" aria-labelledby="EditOrAddServiceModalLabel" aria-hidden="true">
+<div class="modal fade" id="EditOrAddServiceModal" tabindex="-1" aria-labelledby="EditOrAddServiceModalLabel"
+    aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -151,11 +152,19 @@
                         </div>
                     </div>
                     <div>
-                        <label for="serviceImages" class="form-label">Gestionar imágenes</label>
-                        <div class="d-flex">
-                            <input class="form-control d-none" type="file" id="serviceImages"
-                                (change)="onFilesSelected($event)" multiple>
+                        <div class="d-flex align-items-center">
+                            <label for="serviceImages" class="form-label me-2">Gestionar imágenes</label>
+                            <div class="dropdown dropdown-hover mb-2">
+                                <i class="bi bi-info-circle"></i>
+                                <div class="dropdown-menu p-3">
+                                    <p class="small m-0">
+                                        Puedes subir hasta 6 imágenes para mostrar en la galería del servicio.
+                                    </p>
+                                </div>
+                            </div>
                         </div>
+                        <input class="form-control d-none" type="file" id="serviceImages"
+                            (change)="onFilesSelected($event)" multiple>
 
                         <div class="row">
                             <div class="col-md-6">
@@ -180,9 +189,6 @@
                             }
                         </div>
                     </div>
-                    @if (imageUploadError) {
-                        <small class="text-danger my-3">{{ imageUploadErrorMessage }}</small>
-                    }
                     @if (tempImages.length > 0) {
                     <div class="row row-cols-3 g-2 mt-3">
                         @for (preview of tempImages; track $index) {
@@ -203,14 +209,16 @@
                 </form>
             </div>
             <div class="modal-footer">
-                @if (errorMessage) {
-                    <div class="text-danger mt-3" style="text-align: left; font-weight: normal;">{{ errorMessage }}</div>
-                }
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                 <button type="submit" class="btn" data-bs-dismiss="modal" (click)="triggerSubmit()"
-                    [ngClass]="isEditing ? 'btn-primary' : 'btn-success'">
+                    [attr.data-bs-dismiss]="serviceForm.valid ? 'modal' : null"
+                    [ngClass]="isEditing ? 'btn-primary' : 'btn-success'"
+                    [disabled]="!serviceForm.touched && isEditing">
                     {{ isEditing ? 'Editar' : 'Guardar' }}
-                </button>                
+                </button>
+                @if (errorMessage) {
+                <div class="text-danger mt-3" style="text-align: left; font-weight: normal;">{{ errorMessage }}</div>
+                }
             </div>
         </div>
     </div>
@@ -236,4 +244,3 @@
         </div>
     </div>
 </div>
-

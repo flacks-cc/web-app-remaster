@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import type { Product, Image } from '../../../core/models/product.model';
 import { ProductService } from '../../../core/services/product.service';
 import { NgClass } from '@angular/common';
-import { Router } from '@angular/router';
 import { LimitDigitsDirective } from '../../../shared/directives/limit-digits.directive';
+import { ToastService } from '../../../core/services/util/toast.service';
 
 @Component({
   selector: 'app-manage-products',
@@ -22,17 +22,13 @@ export class ManageProductsComponent implements OnInit {
   productForm: FormGroup;
   productToDelete: Product | null = null;
   errorMessage: string = '';
-  isLoading: boolean = false;
-  imageUploadError: boolean = false;
-  imageUploadErrorMessage?: string;
 
+  private _toastService = inject(ToastService);
+  private _productService = inject(ProductService);
+  private _fb = inject(FormBuilder);
 
-  constructor(
-    private fb: FormBuilder,
-    private productService: ProductService,
-    private router: Router
-  ) {
-    this.productForm = this.fb.group({
+  constructor() {
+    this.productForm = this._fb.group({
       name: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
       brand: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
       description: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(254)]],
@@ -45,17 +41,21 @@ export class ManageProductsComponent implements OnInit {
     this.loadInitialData();
   }
 
+  setToast(title: string, message: string, type: 'success' | 'error') {
+    this._toastService.showToast(
+      title,
+      message,
+      type
+    );
+  }
+
   loadInitialData() {
-    this.isLoading = true;
-    this.productService.getAllProducts().subscribe({
+    this._productService.getAllProducts().subscribe({
       next: (data: Product[]) => {
         this.products = data;
-        this.isLoading = false;
       },
-      error: (err) => {
-        console.error('Error fetching products:', err);
-        this.errorMessage = 'Error al cargar los productos. Por favor, intente de nuevo.';
-        this.isLoading = false;
+      error: () => {
+        this.setToast('Error', 'Ocurrió un error al cargar los productos.', 'error');
       }
     });
   }
@@ -84,25 +84,21 @@ export class ManageProductsComponent implements OnInit {
     if (input.files) {
       Array.from(input.files).forEach((file) => {
         if (!allowedFormats.includes(file.type)) {
-          this.imageUploadError = true;
-          this.imageUploadErrorMessage = `Formato no permitido: ${file.type}. Solo se permiten JPG y PNG.`;
+          this.errorMessage = `Formato no permitido: ${file.type}. Solo se permiten JPG y PNG.`;
           return;
         }
 
         if (file.size > maxSizeInBytes) {
-          this.imageUploadError = true;
-          this.imageUploadErrorMessage = `El archivo ${file.name} es demasiado grande. El tamaño máximo permitido es ${maxSizeInMB} MB.`;
+          this.errorMessage = `El archivo ${file.name} es demasiado grande. El tamaño máximo permitido es ${maxSizeInMB} MB.`;
           return;
         }
 
         const img = new Image();
         img.onload = () => {
           if (img.width > maxWidth || img.height > maxHeight) {
-            this.imageUploadError = true;
-            this.imageUploadErrorMessage = `La imagen ${file.name} excede las dimensiones máximas permitidas de ${maxWidth}x${maxHeight} píxeles.`;
+            this.errorMessage = `La imagen ${file.name} excede las dimensiones máximas permitidas de ${maxWidth}x${maxHeight} píxeles.`;
           } else {
-            this.imageUploadError = false;
-            this.imageUploadErrorMessage = '';
+            this.errorMessage = '';
 
             const reader = new FileReader();
             reader.onload = () => {
@@ -158,6 +154,10 @@ export class ManageProductsComponent implements OnInit {
   }
 
   saveProduct() {
+    Object.values(this.productForm.controls).forEach(control => {
+      control.markAsTouched();
+    });
+
     if (this.productForm.valid) {
       const formData = new FormData();
       const productData = this.productForm.value;
@@ -199,42 +199,34 @@ export class ManageProductsComponent implements OnInit {
       }
 
       Promise.all(imagePromises).then(() => {
-        this.isLoading = true;
         if (this.isEditing && this.currentProduct.idProduct) {
-          this.productService.updateProduct(this.currentProduct.idProduct, formData).subscribe({
-            next: (response) => {
-              console.log('Producto actualizado exitosamente', response);
+          this._productService.updateProduct(this.currentProduct.idProduct, formData).subscribe({
+            next: () => {
               this.loadInitialData();
-              this.isLoading = false;
               this.resetModalState();
-
+              this.setToast('Producto actualizado', 'El producto se ha actualizado correctamente.', 'success');
             },
             error: (error) => {
-              console.error('Error al actualizar el producto', error);
               this.handleError(error);
-              this.isLoading = false;
+              this.setToast('Error al actualizar', 'Ocurrió un error al actualizar el producto. Por favor, intente de nuevo.', 'error');
             }
           });
         } else {
-          this.productService.createProduct(formData).subscribe({
-            next: (response) => {
-              console.log('Producto creado exitosamente', response);
+          this._productService.createProduct(formData).subscribe({
+            next: () => {
               this.loadInitialData();
-              this.isLoading = false;
               this.resetModalState();
+              this.setToast('Producto creado', 'El producto se ha creado correctamente.', 'success');
             },
             error: (error) => {
-              console.error('Error al crear el producto', error);
               this.handleError(error);
-              this.isLoading = false;
+              this.setToast('Error al crear', 'Ocurrió un error al crear el producto. Por favor, intente de nuevo.', 'error');
             }
           });
         }
       });
     } else {
-      Object.values(this.productForm.controls).forEach(control => {
-        control.markAsTouched();
-      });
+      this.errorMessage = 'Por favor, complete todos los campos correctamente.';
     }
   }
 
@@ -252,19 +244,15 @@ export class ManageProductsComponent implements OnInit {
 
   deleteProduct() {
     if (this.productToDelete) {
-      this.isLoading = true;
-      this.productService.deleteProduct(this.productToDelete.idProduct).subscribe({
+      this._productService.deleteProduct(this.productToDelete.idProduct).subscribe({
         next: () => {
           this.loadInitialData();
           this.productToDelete = null;
-          console.log('Producto eliminado');
-          this.isLoading = false;
           this.resetModalState();
+          this.setToast('Producto eliminado', 'El producto se ha eliminado correctamente.', 'success');
         },
-        error: (error) => {
-          console.error('Error al eliminar el producto', error);
-          this.errorMessage = 'Error al eliminar el producto. Por favor, intente de nuevo.';
-          this.isLoading = false;
+        error: () => {
+          this.setToast('Error al eliminar', 'Ocurrió un error al eliminar el producto. Por favor, intente de nuevo.', 'error');
         }
       });
     }
