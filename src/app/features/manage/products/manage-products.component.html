@@ -2,7 +2,7 @@
     <!-- Título y botón para agregar nuevo producto -->
     <div class="container bg-dark text-white d-flex justify-content-between align-items-center rounded p-3 mb-3">
         <h4 class="m-0 fw-bold">Administrar productos</h4>
-        <button class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#EditOrAddproductModal"
+        <button class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#EditOrAddProductModal"
             (click)="openAddProductModal()">
             <i class="bi bi-plus-circle"></i>
         </button>
@@ -31,7 +31,7 @@
                     <td class="text-center align-middle text-nowrap-small">${{ product.price }}</td>
                     <td class="text-center align-middle text-nowrap-small">
                         <button class="btn btn-primary btn-sm me-1" data-bs-toggle="modal"
-                            data-bs-target="#EditOrAddproductModal" (click)="openEditProductModal(product)">
+                            data-bs-target="#EditOrAddProductModal" (click)="openEditProductModal(product)">
                             <i class="bi bi-pencil-fill"></i>
                         </button>
                         <button class="btn btn-danger btn-sm" data-bs-toggle="modal"
@@ -47,7 +47,7 @@
 </div>
 
 <!-- Modal para agregar/editar producto -->
-<div class="modal fade" id="EditOrAddproductModal" tabindex="-1" aria-labelledby="EditOrAddproductModalLabel"
+<div class="modal fade" id="EditOrAddProductModal" tabindex="-1" aria-labelledby="EditOrAddProductModalLabel"
     aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -159,11 +159,19 @@
                         </div>
                     </div>
                     <div>
-                        <label for="productImages" class="form-label">Gestionar imágenes</label>
-                        <div class="d-flex">
-                            <input class="form-control d-none" type="file" id="productImages"
-                                (change)="onFilesSelected($event)" multiple accept="image/*">
+                        <div class="d-flex align-items-center">
+                            <label for="serviceImages" class="form-label me-2">Gestionar imágenes</label>
+                            <div class="dropdown dropdown-hover mb-2">
+                                <i class="bi bi-info-circle"></i>
+                                <div class="dropdown-menu p-3">
+                                    <p class="small m-0">
+                                        Puedes subir hasta 6 imágenes para mostrar en la galería del servicio.
+                                    </p>
+                                </div>
+                            </div>
                         </div>
+                        <input class="form-control d-none" type="file" id="productImages"
+                            (change)="onFilesSelected($event)" multiple>
 
                         <div class="row">
                             <div class="col-md-6">
@@ -215,14 +223,16 @@
                 </form>
             </div>
             <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn" data-bs-dismiss="modal" (click)="triggerSubmit()"
+                    [attr.data-bs-dismiss]="productForm.valid ? 'modal' : null"
+                    [ngClass]="isEditing ? 'btn-primary' : 'btn-success'"
+                    [disabled]="!productForm.touched && isEditing">
+                    {{ isEditing ? 'Editar' : 'Guardar' }}
+                </button>
                 @if (errorMessage) {
                 <div class="text-danger mt-3" style="text-align: left; font-weight: normal;">{{ errorMessage }}</div>
                 }
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="submit" class="btn" data-bs-dismiss="modal" (click)="triggerSubmit()"
-                    [ngClass]="isEditing ? 'btn-primary' : 'btn-success'">
-                    {{ isEditing ? 'Editar' : 'Guardar' }}
-                </button>
             </div>
         </div>
     </div>
@@ -234,11 +244,11 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="deleteProductModalLabel">Confirmar Eliminación</h5>
+                <h5 class="modal-title" id="deleteProductModalLabel">Eliminar producto</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                ¿Estás seguro de que deseas eliminar este producto?
+                <p class="m-0">¿Estás seguro de que deseas eliminar el producto {{productToDelete?.name}}?</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>

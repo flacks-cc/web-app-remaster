@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import type { Service, Image } from '../../../core/models/service.model';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgClass } from '@angular/common';
 import { ServiceService } from '../../../core/services/service.service';
 import { LimitDigitsDirective } from '../../../shared/directives/limit-digits.directive';
+import { ToastService } from '../../../core/services/util/toast.service';
 
 @Component({
   selector: 'app-manage-services',
@@ -42,17 +43,21 @@ export class ManageServicesComponent implements OnInit {
     this.loadInitialData();
   }
 
+  setToast(title: string, message: string, type: 'success' | 'error') {
+    this._toastService.showToast(
+      title,
+      message,
+      type
+    );
+  }
+
   loadInitialData() {
-    this.isLoading = true;
-    this.serviceService.getAllServices().subscribe({
+    this._serviceService.getAllServices().subscribe({
       next: (data: Service[]) => {
         this.services = data;
-        this.isLoading = false;
       },
       error: (err) => {
-        console.error('Error fetching services:', err);
-        this.errorMessage = 'Error al cargar los servicios. Por favor, intente de nuevo.';
-        this.isLoading = false;
+        this.setToast('Error', 'Ocurrió un error al cargar los servicios.', 'error');
       }
     });
   }
@@ -298,19 +303,15 @@ export class ManageServicesComponent implements OnInit {
 
   deleteService() {
     if (this.serviceToDelete) {
-      this.isLoading = true;
-      this.serviceService.deleteService(this.serviceToDelete.idService).subscribe({
+      this._serviceService.deleteService(this.serviceToDelete.idService).subscribe({
         next: () => {
           this.loadInitialData();
           this.serviceToDelete = null;
           console.log('Servicio eliminado');
-          this.isLoading = false;
           this.resetModalState();
         },
         error: (error) => {
-          console.error('Error al eliminar el servicio', error);
-          this.errorMessage = 'Error al eliminar el servicio. Por favor, intente de nuevo.';
-          this.isLoading = false;
+          this.setToast('Error', 'Ocurrió un error al eliminar el servicio.', 'error');
         }
       });
     }

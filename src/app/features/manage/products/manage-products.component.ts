@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import type { Product, Image } from '../../../core/models/product.model';
 import { ProductService } from '../../../core/services/product.service';
 import { NgClass } from '@angular/common';
-import { Router } from '@angular/router';
 import { LimitDigitsDirective } from '../../../shared/directives/limit-digits.directive';
+import { ToastService } from '../../../core/services/util/toast.service';
 
 @Component({
   selector: 'app-manage-products',
@@ -25,12 +25,11 @@ export class ManageProductsComponent implements OnInit {
   isLoading: boolean = false;
   imageUploadError: { name: string; error: string }[] = [];
 
+  private _toastService = inject(ToastService);
+  private _productService = inject(ProductService);
+  private _fb = inject(FormBuilder);
 
-  constructor(
-    private fb: FormBuilder,
-    private productService: ProductService,
-    private router: Router
-  ) {
+  constructor() {
     this.productForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
       brand: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
@@ -44,17 +43,21 @@ export class ManageProductsComponent implements OnInit {
     this.loadInitialData();
   }
 
+  setToast(title: string, message: string, type: 'success' | 'error') {
+    this._toastService.showToast(
+      title,
+      message,
+      type
+    );
+  }
+
   loadInitialData() {
-    this.isLoading = true;
-    this.productService.getAllProducts().subscribe({
+    this._productService.getAllProducts().subscribe({
       next: (data: Product[]) => {
         this.products = data;
-        this.isLoading = false;
       },
-      error: (err) => {
-        console.error('Error fetching products:', err);
-        this.errorMessage = 'Error al cargar los productos. Por favor, intente de nuevo.';
-        this.isLoading = false;
+      error: () => {
+        this.setToast('Error', 'Ocurrió un error al cargar los productos.', 'error');
       }
     });
   }
@@ -304,19 +307,15 @@ export class ManageProductsComponent implements OnInit {
 
   deleteProduct() {
     if (this.productToDelete) {
-      this.isLoading = true;
-      this.productService.deleteProduct(this.productToDelete.idProduct).subscribe({
+      this._productService.deleteProduct(this.productToDelete.idProduct).subscribe({
         next: () => {
           this.loadInitialData();
           this.productToDelete = null;
-          console.log('Producto eliminado');
-          this.isLoading = false;
           this.resetModalState();
+          this.setToast('Producto eliminado', 'El producto se ha eliminado correctamente.', 'success');
         },
-        error: (error) => {
-          console.error('Error al eliminar el producto', error);
-          this.errorMessage = 'Error al eliminar el producto. Por favor, intente de nuevo.';
-          this.isLoading = false;
+        error: () => {
+          this.setToast('Error al eliminar', 'Ocurrió un error al eliminar el producto. Por favor, intente de nuevo.', 'error');
         }
       });
     }
