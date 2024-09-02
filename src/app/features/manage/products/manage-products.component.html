@@ -1,4 +1,4 @@
-<div class="container mt-3 px-4">
+<div class="container mt-3 px-4 ps-2">
     <!-- Título y botón para agregar nuevo producto -->
     <div class="container bg-dark text-white d-flex justify-content-between align-items-center rounded p-3 mb-3">
         <h4 class="m-0 fw-bold">Administrar productos</h4>
@@ -47,7 +47,8 @@
 </div>
 
 <!-- Modal para agregar/editar producto -->
-<div class="modal fade" id="EditOrAddproductModal" tabindex="-1" aria-labelledby="EditOrAddproductModalLabel" aria-hidden="true">
+<div class="modal fade" id="EditOrAddproductModal" tabindex="-1" aria-labelledby="EditOrAddproductModalLabel"
+    aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -161,7 +162,7 @@
                         <label for="productImages" class="form-label">Gestionar imágenes</label>
                         <div class="d-flex">
                             <input class="form-control d-none" type="file" id="productImages"
-                                (change)="onFilesSelected($event)" multiple>
+                                (change)="onFilesSelected($event)" multiple accept="image/*">
                         </div>
 
                         <div class="row">
@@ -172,7 +173,6 @@
                                     <input readonly class="form-control pointer" placeholder="Subir imágenes">
                                 </div>
                             </div>
-
                             @if (tempImages.length > 0) {
                             <div class="col-md-6">
                                 <div class="input-group pointer" [class.pointer]="selectedImages.length > 0"
@@ -188,8 +188,12 @@
                             }
                         </div>
                     </div>
-                    @if (imageUploadError) {
-                        <small class="text-danger my-3">{{ imageUploadErrorMessage }}</small>
+                    @if (imageUploadError.length > 0) {
+                    <div>
+                        @for (error of imageUploadError; track $index) {
+                        <small class="text-danger my-3 d-block">{{ error.name }} {{ error.error }}</small>
+                        }
+                    </div>
                     }
                     @if (tempImages.length > 0) {
                     <div class="row row-cols-3 g-2 mt-3">

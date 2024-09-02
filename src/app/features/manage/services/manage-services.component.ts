@@ -22,8 +22,8 @@ export class ManageServicesComponent implements OnInit {
   serviceToDelete: Service | null = null;
   errorMessage: string = '';
   isLoading: boolean = false;
-  imageUploadError: boolean = false;
-  imageUploadErrorMessage?: string;
+  imageUploadError: { name: string; error: string }[] = [];
+
 
   constructor(
     private fb: FormBuilder,
@@ -94,48 +94,56 @@ export class ManageServicesComponent implements OnInit {
 
   onFilesSelected(event: Event) {
     const input = event.target as HTMLInputElement;
-    const allowedFormats = ['image/jpg', 'image/png'];
-    const maxSizeInMB = 5;
+    const allowedFormats = ['image/jpg', 'image/png', 'image/jpeg', 'image/webp', 'image/heif'];
+    const maxSizeInMB = 4;
     const maxSizeInBytes = maxSizeInMB * 1024 * 1024;
-    const maxWidth = 300;
-    const maxHeight = 300;
 
-    if (input.files) {
-      Array.from(input.files).forEach((file) => {
-        if (!allowedFormats.includes(file.type)) {
-          this.imageUploadError = true;
-          this.imageUploadErrorMessage = `Formato no permitido: ${file.type}. Solo se permiten JPG y PNG.`;
-          return;
-        }
+    if (!input || !input.files) {
+      return;
+    }
 
-        if (file.size > maxSizeInBytes) {
-          this.imageUploadError = true;
-          this.imageUploadErrorMessage = `El archivo ${file.name} es demasiado grande. El tamaño máximo permitido es ${maxSizeInMB} MB.`;
-          return;
-        }
+    const files = input.files;
+    const newImageFiles = Array.from(files);
+    const totalFiles = this.tempImages.length + newImageFiles.length;
 
-        const img = new Image();
-        img.onload = () => {
-          if (img.width > maxWidth || img.height > maxHeight) {
-            this.imageUploadError = true;
-            this.imageUploadErrorMessage = `La imagen ${file.name} excede las dimensiones máximas permitidas de ${maxWidth}x${maxHeight} píxeles.`;
-          } else {
-            this.imageUploadError = false;
-            this.imageUploadErrorMessage = '';
-
-            const reader = new FileReader();
-            reader.onload = () => {
-              if (typeof reader.result === 'string' && !this.tempImages.includes(reader.result)) {
-                this.tempImages.push(reader.result);
-              }
-            };
-            reader.readAsDataURL(file);
-          }
-        };
-        img.src = URL.createObjectURL(file);
+    if (totalFiles <= 6) {
+      this.imageUploadError = [];
+    } else {
+      this.imageUploadError.push({
+        name: 'Error:',
+        error: 'No puedes seleccionar más de 6 imágenes en total.'
       });
       input.value = '';
+      return;
     }
+
+    newImageFiles.forEach((file) => {
+      if (!allowedFormats.includes(file.type)) {
+        this.imageUploadError.push({
+          name: `La imagen ${file.name}`,
+          error: `es un ${file.name.split('.').pop()} y solo se permiten JPG, PNG, JPEG, WEBP y HEIF.`
+        });
+        return;
+      }
+
+      if (file.size > maxSizeInBytes) {
+        this.imageUploadError.push({
+          name: file.name,
+          error: `El archivo es demasiado grande. El tamaño máximo permitido es ${maxSizeInMB} MB.`
+        });
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (typeof reader.result === 'string' && !this.tempImages.includes(reader.result)) {
+          this.tempImages.push(reader.result);
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+
+    input.value = '';
   }
 
   selectImage(index: number, event: MouseEvent) {
@@ -154,24 +162,37 @@ export class ManageServicesComponent implements OnInit {
   }
 
   saveService() {
+    this.errorMessage = '';
+    this.imageUploadError = [];
+
     if (this.serviceForm.valid) {
       const formData = new FormData();
-      const serviceData = this.serviceForm.value;
-      formData.append('name', serviceData.name);
-      formData.append('description', serviceData.description);
-      formData.append('price', serviceData.price.toString());
-      formData.append('duration', serviceData.duration.toString());
+      const productData = this.serviceForm.value;
+      formData.append('name', productData.name);
+      formData.append('brand', productData.brand);
+      formData.append('description', productData.description);
+      formData.append('price', productData.price.toString());
 
       const imagePromises: Promise<void>[] = [];
       let hasNewImages = false;
+      const allowedFormats = ['image/jpeg', 'image/png', 'image/webp', 'image/heif'];
 
       if (this.isEditing && this.currentService.images) {
-        this.currentService.images.forEach((image: Image, index: number) => {
+        this.currentService.images.forEach((image: Image) => {
           if (this.tempImages.includes(image.imageUrl)) {
             const promise = fetch(image.imageUrl)
               .then(res => res.blob())
               .then(blob => {
-                formData.append('imageFile', blob, image.image);
+                if (allowedFormats.includes(blob.type)) {
+                  const extension = this.getExtensionFromMimeType(blob.type);
+                  formData.append('imageFile', blob, `${image.image}.${extension}`);
+                } else {
+                  this.imageUploadError.push({
+                    name: `La imagen ${image.image}`,
+                    error: `tiene un formato no permitido: ${blob.type}. 
+                                    Solo se permiten JPEG, PNG, WEBP y HEIF.`
+                  });
+                }
               });
             imagePromises.push(promise);
           }
@@ -184,7 +205,16 @@ export class ManageServicesComponent implements OnInit {
           const promise = fetch(image)
             .then(res => res.blob())
             .then(blob => {
-              formData.append('imageFile', blob, `image${index}.png`);
+              if (allowedFormats.includes(blob.type)) {
+                const extension = this.getExtensionFromMimeType(blob.type);
+                formData.append('imageFile', blob, `image${index}.${extension}`);
+              } else {
+                this.imageUploadError.push({
+                  name: `Imagen ${index}`,
+                  error: `tiene un formato no permitido: ${blob.type}. 
+                                Solo se permiten JPEG, PNG, WEBP y HEIF.`
+                });
+              }
             });
           imagePromises.push(promise);
         }
@@ -195,41 +225,62 @@ export class ManageServicesComponent implements OnInit {
       }
 
       Promise.all(imagePromises).then(() => {
-        this.isLoading = true;
-        if (this.isEditing && this.currentService.idService) {
-          this.serviceService.updateService(this.currentService.idService, formData).subscribe({
-            next: (response) => {
-              console.log('Servicio actualizado exitosamente', response);
-              this.loadInitialData();
-              this.isLoading = false;
-              this.resetModalState();
-            },
-            error: (error) => {
-              console.error('Error al actualizar el servicio', error);
-              this.handleError(error);
-              this.isLoading = false;
-            }
-          });
+        if (this.imageUploadError.length === 0) {
+          this.isLoading = true;
+          if (this.isEditing && this.currentService.idService) {
+            this.serviceService.updateService(this.currentService.idService, formData).subscribe({
+              next: (response) => {
+                console.log('Producto actualizado exitosamente', response);
+                this.loadInitialData();
+                this.isLoading = false;
+                this.resetModalState();
+              },
+              error: (error) => {
+                console.error('Error al actualizar el producto', error);
+                this.handleError(error);
+                this.isLoading = false;
+              }
+            });
+          } else {
+            this.serviceService.createService(formData).subscribe({
+              next: (response) => {
+                console.log('Producto creado exitosamente', response);
+                this.loadInitialData();
+                this.isLoading = false;
+                this.resetModalState();
+              },
+              error: (error) => {
+                console.error('Error al crear el producto', error);
+                this.handleError(error);
+                this.isLoading = false;
+              }
+            });
+          }
         } else {
-          this.serviceService.createService(formData).subscribe({
-            next: (response) => {
-              console.log('Servicio creado exitosamente', response);
-              this.loadInitialData();
-              this.isLoading = false;
-              this.resetModalState();
-            },
-            error: (error) => {
-              console.error('Error al crear el servicio', error);
-              this.handleError(error);
-              this.isLoading = false;
-            }
-          });
+          this.isLoading = false;
         }
       });
     } else {
       Object.values(this.serviceForm.controls).forEach(control => {
         control.markAsTouched();
       });
+      this.errorMessage = 'Por favor, corrija los errores en el formulario.';
+    }
+  }
+
+  // Método auxiliar para obtener la extensión del archivo a partir del tipo MIME
+  getExtensionFromMimeType(mimeType: string): string | null {
+    switch (mimeType) {
+      case 'image/jpeg':
+        return 'jpg';
+      case 'image/png':
+        return 'png';
+      case 'image/webp':
+        return 'webp';
+      case 'image/heif':
+        return 'heif';
+      default:
+        return null; // Devuelve null si el formato no es permitido
     }
   }
 
