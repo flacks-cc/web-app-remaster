@@ -231,46 +231,34 @@ export class ManageServicesComponent implements OnInit {
       }
 
       Promise.all(imagePromises).then(() => {
-        if (this.imageUploadError.length === 0) {
-          this.isLoading = true;
-          if (this.isEditing && this.currentService.idService) {
-            this._serviceService.updateService(this.currentService.idService, formData).subscribe({
-              next: (response) => {
-                console.log('Producto actualizado exitosamente', response);
-                this.loadInitialData();
-                this.isLoading = false;
-                this.resetModalState();
-              },
-              error: (error) => {
-                console.error('Error al actualizar el producto', error);
-                this.handleError(error);
-                this.isLoading = false;
-              }
-            });
-          } else {
-            this._serviceService.createService(formData).subscribe({
-              next: (response) => {
-                console.log('Producto creado exitosamente', response);
-                this.loadInitialData();
-                this.isLoading = false;
-                this.resetModalState();
-              },
-              error: (error) => {
-                console.error('Error al crear el producto', error);
-                this.handleError(error);
-                this.isLoading = false;
-              }
-            });
-          }
+        if (this.isEditing && this.currentService.idService) {
+          this._serviceService.updateService(this.currentService.idService, formData).subscribe({
+            next: () => {
+              this.loadInitialData();
+              this.resetModalState();
+              this.setToast('Producto actualizado', 'El producto se ha actualizado correctamente.', 'success');
+            },
+            error: (error) => {
+              this.handleError(error);
+              this.setToast('Error al actualizar', 'Ocurrió un error al actualizar el producto. Por favor, intente de nuevo.', 'error');
+            }
+          });
         } else {
-          this.isLoading = false;
+          this._serviceService.createService(formData).subscribe({
+            next: () => {
+              this.loadInitialData();
+              this.resetModalState();
+              this.setToast('Producto creado', 'El producto se ha creado correctamente.', 'success');
+            },
+            error: (error) => {
+              this.handleError(error);
+              this.setToast('Error al crear', 'Ocurrió un error al crear el producto. Por favor, intente de nuevo.', 'error');
+            }
+          });
         }
       });
     } else {
-      Object.values(this.serviceForm.controls).forEach(control => {
-        control.markAsTouched();
-      });
-      this.errorMessage = 'Por favor, corrija los errores en el formulario.';
+      this.errorMessage = 'Por favor, complete todos los campos correctamente.';
     }
   }
 

@@ -4,14 +4,27 @@
 
 <div class="container-fluid p-5">
     <div class="row d-flex justify-content-center">
-        @for (service of services; track $index) {
+      @for (service of services; track $index) {
         <div class="col-12 col-md-6 col-lg-3 text-center d-flex flex-column align-items-center p-4">
-            <img [src]="service.images[0].imageUrl" class="mb-3 w-50" [alt]="service.name">
-            <p class="m-0 fw-bold">{{ service.name }}</p>
-            <p class="m-0">{{ service.description }}</p>
-            <p class="m-0 fw-bold">Precio: ${{ service.price }}</p>
-            <p class="m-0 fw-bold">Duración: {{ service.duration }} min</p>
+          <div class="carousel-container position-relative">
+            @if (service.images.length > 0) {
+                <img [src]="service.images[0].imageUrl" class="mb-3 w-50" [alt]="service.name" />
+              @if (service.images.length > 1) {
+                <button class="carousel-control-prev" (click)="prevImage(service)">
+                  &#8249;
+                </button>
+                <button class="carousel-control-next" (click)="nextImage(service)">
+                  &#8250;
+                </button>
+              }
+            }
+          </div>
+          <p class="m-0 fw-bold">{{ service.name }}</p>
+          <p class="m-0">{{ service.description }}</p>
+          <p class="m-0 fw-bold">Precio: ${{ service.price }}</p>
+          <p class="m-0 fw-bold">Duración: {{ service.duration }} min</p>
         </div>
-        }
+      }
     </div>
-</div>
+  </div>
+  
