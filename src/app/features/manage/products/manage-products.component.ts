@@ -17,6 +17,7 @@ export class ManageProductsComponent implements OnInit {
   products: Product[] = [];
   currentProduct: Product = { idProduct: 0, name: '', brand: '', description: '', price: 0, images: [] };
   isEditing: boolean = false;
+  isImagesChanges: boolean = false;
   tempImages: string[] = [];
   selectedImages: number[] = [];
   productForm: FormGroup;
@@ -33,8 +34,7 @@ export class ManageProductsComponent implements OnInit {
       name: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
       brand: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
       description: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(254)]],
-      price: ['', [Validators.required, Validators.min(0)]],
-      images: [[]]
+      price: ['', [Validators.required, Validators.min(0)]]
     });
   }
 
@@ -75,6 +75,7 @@ export class ManageProductsComponent implements OnInit {
   }
 
   onFilesSelected(event: Event) {
+    this.isImagesChanges = true;
     const input = event.target as HTMLInputElement;
     const allowedFormats = ['image/jpg', 'image/png', 'image/jpeg', 'image/webp', 'image/heif'];
     const maxSizeInMB = 4;
@@ -149,8 +150,6 @@ export class ManageProductsComponent implements OnInit {
     });
   }
   
-  
-  
   triggerFileInput() {
     const fileInput = document.getElementById('productImages') as HTMLInputElement;
     if (fileInput) {
@@ -186,6 +185,7 @@ export class ManageProductsComponent implements OnInit {
   }
 
   removeSelectedImages() {
+    this.isImagesChanges = true;
     this.selectedImages.sort((a, b) => b - a).forEach((index) => this.removeImage(index));
   }
 
@@ -193,7 +193,7 @@ export class ManageProductsComponent implements OnInit {
     this.errorMessage = '';
     this.imageUploadError = [];
 
-    if (this.productForm.valid) {
+    if (this.productForm.valid && this.tempImages.length > 0) {
       const formData = new FormData();
       const productData = this.productForm.value;
       formData.append('name', productData.name);
@@ -300,7 +300,6 @@ export class ManageProductsComponent implements OnInit {
     }
   }
 
-
   handleError(error: any) {
     if (error.error && error.error.message) {
       this.errorMessage = error.error.message;
@@ -329,13 +328,13 @@ export class ManageProductsComponent implements OnInit {
     }
   }
 
-  private resetModalState() {
+  resetModalState() {
     this.productForm.reset();
     this.tempImages = [];
     this.selectedImages = [];
     this.errorMessage = '';
     this.isEditing = false;
+    this.isImagesChanges = false;
     this.currentProduct = { idProduct: 0, name: '', brand: '', description: '', price: 0, images: [] };
   }
 }
-

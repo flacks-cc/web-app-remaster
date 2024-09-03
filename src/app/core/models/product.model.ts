@@ -1,16 +1,16 @@
-export interface Product{
-[x: string]: any;
+export interface Product {
+    [x: string]: any;
     idProduct: number;
     name: string;
     brand?: string;
     description?: string;
     price: number;
-    images: Image [];
+    images: Image[];
 }
 
 export interface Image {
     id: number;
     image: string;
-    imageUrl: string;
+    imageUrl: string;
 }
 

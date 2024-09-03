@@ -1,0 +1,15 @@
+.img-hover-container:hover .image-nav-button {
+    display: block !important; /* Mostrar los botones al pasar el mouse */
+}
+
+.img-hover-container {
+    position: relative;
+}
+
+.image-nav-button {
+    opacity: 0.5;
+}
+
+.image-nav-button:hover {
+    opacity: 1;
+}

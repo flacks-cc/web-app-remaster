@@ -50,4 +50,10 @@ export class AuthService {
       sessionStorage.setItem('authToken', token);
     }
   }
+
+  // Metodo para eliminar el token del almacenamiento local y de sesión
+  removeToken(): void {
+    localStorage.removeItem('authToken');
+    sessionStorage.removeItem('authToken');
+  }
 }

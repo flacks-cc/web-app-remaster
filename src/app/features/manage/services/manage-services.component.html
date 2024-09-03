@@ -53,7 +53,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">{{ isEditing ? 'Editar servicio' : 'Agregar servicio' }}</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="resetModalState()"></button>
             </div>
             <div class="modal-body p-4">
                 <!-- Formulario de servicio -->
@@ -216,11 +216,11 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="resetModalState()">Cancelar</button>
                 <button type="submit" class="btn" data-bs-dismiss="modal" (click)="triggerSubmit()"
-                    [attr.data-bs-dismiss]="serviceForm.valid ? 'modal' : null"
+                    [attr.data-bs-dismiss]="serviceForm.valid && tempImages.length > 0 ? 'modal' : null"
                     [ngClass]="isEditing ? 'btn-primary' : 'btn-success'"
-                    [disabled]="!serviceForm.touched && isEditing">
+                    [disabled]="isEditing && (!isImagesChanges && !serviceForm.touched)">
                     {{ isEditing ? 'Editar' : 'Guardar' }}
                 </button>
                 @if (errorMessage) {
@@ -238,13 +238,13 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Eliminar servicio</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="resetModalState()"></button>
             </div>
             <div class="modal-body">
                 <p class="m-0">¿Estás seguro de que deseas eliminar el servicio {{serviceToDelete?.name}}?</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="resetModalState()">Cancelar</button>
                 <button type="button" class="btn btn-danger" data-bs-dismiss="modal"
                     (click)="deleteService()">Eliminar</button>
             </div>

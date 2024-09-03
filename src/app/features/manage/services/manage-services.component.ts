@@ -17,15 +17,14 @@ export class ManageServicesComponent implements OnInit {
   services: Service[] = [];
   currentService: Service = { idService: 0, name: '', description: '', price: 0, duration: 0, images: [] };
   isEditing: boolean = false;
+  isImagesChanges: boolean = false;
   tempImages: string[] = [];
   selectedImages: number[] = [];
   serviceForm: FormGroup;
   serviceToDelete: Service | null = null;
   errorMessage: string = '';
-  isLoading: boolean = false;
   imageUploadError: { name: string; error: string }[] = [];
 
-  
   private _toastService = inject(ToastService);
   private _serviceService = inject(ServiceService);
   private _fb = inject(FormBuilder);
@@ -35,8 +34,7 @@ export class ManageServicesComponent implements OnInit {
       name: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
       description: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(254)]],
       price: ['', [Validators.min(0)]],
-      duration: ['', [Validators.min(0)]],
-      images: [[]]
+      duration: ['', [Validators.min(0)]]
     });
   }
 
@@ -57,7 +55,7 @@ export class ManageServicesComponent implements OnInit {
       next: (data: Service[]) => {
         this.services = data;
       },
-      error: (err) => {
+      error: () => {
         this.setToast('Error', 'Ocurrió un error al cargar los servicios.', 'error');
       }
     });
@@ -99,6 +97,7 @@ export class ManageServicesComponent implements OnInit {
   }
 
   onFilesSelected(event: Event) {
+    this.isImagesChanges = true;
     const input = event.target as HTMLInputElement;
     const allowedFormats = ['image/jpg', 'image/png', 'image/jpeg', 'image/webp', 'image/heif'];
     const maxSizeInMB = 4;
@@ -185,6 +184,7 @@ export class ManageServicesComponent implements OnInit {
   }
 
   removeSelectedImages() {
+    this.isImagesChanges = true;
     this.selectedImages.sort((a, b) => b - a).forEach((index) => this.removeImage(index));
   }
 
@@ -192,13 +192,13 @@ export class ManageServicesComponent implements OnInit {
     this.errorMessage = '';
     this.imageUploadError = [];
 
-    if (this.serviceForm.valid) {
+    if (this.serviceForm.valid && this.tempImages.length > 0) {
       const formData = new FormData();
-      const productData = this.serviceForm.value;
-      formData.append('name', productData.name);
-      formData.append('brand', productData.brand);
-      formData.append('description', productData.description);
-      formData.append('price', productData.price.toString());
+      const serviceData = this.serviceForm.value;
+      formData.append('name', serviceData.name);
+      formData.append('description', serviceData.description);
+      formData.append('price', serviceData.price.toString());
+      formData.append('duration', serviceData.duration.toString());
 
       const imagePromises: Promise<void>[] = [];
       let hasNewImages = false;
@@ -257,11 +257,11 @@ export class ManageServicesComponent implements OnInit {
             next: () => {
               this.loadInitialData();
               this.resetModalState();
-              this.setToast('Producto actualizado', 'El producto se ha actualizado correctamente.', 'success');
+              this.setToast('Servicio actualizado', 'El servicio se ha actualizado correctamente.', 'success');
             },
             error: (error) => {
               this.handleError(error);
-              this.setToast('Error al actualizar', 'Ocurrió un error al actualizar el producto. Por favor, intente de nuevo.', 'error');
+              this.setToast('Error al actualizar', 'Ocurrió un error al actualizar el servicio. Por favor, intente de nuevo.', 'error');
             }
           });
         } else {
@@ -269,11 +269,11 @@ export class ManageServicesComponent implements OnInit {
             next: () => {
               this.loadInitialData();
               this.resetModalState();
-              this.setToast('Producto creado', 'El producto se ha creado correctamente.', 'success');
+              this.setToast('Servicio creado', 'El servicio se ha creado correctamente.', 'success');
             },
             error: (error) => {
               this.handleError(error);
-              this.setToast('Error al crear', 'Ocurrió un error al crear el producto. Por favor, intente de nuevo.', 'error');
+              this.setToast('Error al crear', 'Ocurrió un error al crear el servicio. Por favor, intente de nuevo.', 'error');
             }
           });
         }
@@ -317,22 +317,23 @@ export class ManageServicesComponent implements OnInit {
         next: () => {
           this.loadInitialData();
           this.serviceToDelete = null;
-          console.log('Servicio eliminado');
           this.resetModalState();
+          this.setToast('Serevicio eliminado', 'El servicio se ha eliminado correctamente.', 'success');
         },
-        error: (error) => {
+        error: () => {
           this.setToast('Error', 'Ocurrió un error al eliminar el servicio.', 'error');
         }
       });
     }
   }
 
-  private resetModalState() {
+  resetModalState() {
     this.serviceForm.reset();
     this.tempImages = [];
     this.selectedImages = [];
     this.errorMessage = '';
     this.isEditing = false;
+    this.isImagesChanges = false;
     this.currentService = { idService: 0, name: '', description: '', price: 0, duration: 0, images: [] };
   }
 }

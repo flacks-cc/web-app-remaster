@@ -7,7 +7,7 @@ import { ProductService } from '../../core/services/product.service';
   standalone: true,
   imports: [],
   templateUrl: './products.component.html',
-  styleUrls: ['./products.component.css'] // Corrige 'styleUrl' a 'styleUrls'
+  styleUrls: ['./products.component.css']
 })
 export class ProductsComponent implements OnInit {
 
@@ -17,7 +17,6 @@ export class ProductsComponent implements OnInit {
 
   ngOnInit(): void {
     this.productService.getAllProducts().subscribe((data: Product[]) => {
-      // Inicializa el índice actual de la imagen en cada producto
       this.products = data.map(product => ({ ...product, currentImageIndex: 0 }));
     });
   }

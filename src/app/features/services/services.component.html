@@ -1,55 +1,53 @@
 <div class="bg-dark text-center py-4">
-    <h3 class="text-white m-0 fw-bolder">SERVICIOS</h3>
+  <h3 class="text-white m-0 fw-bolder">SERVICIOS</h3>
 </div>
 
 <div class="container-fluid p-5">
-    <div class="row d-flex justify-content-center">
-        @defer () {
-        <!-- Mostrar mensaje si no hay servicios -->
-        @if (services.length === 0) {
-        <div class="col-12 text-center">
-            <div class="alert">
-                <h4 class="alert-heading mb-2">No hay servicios disponibles</h4>
-                <p>Por favor, intentalo más tarde o contactanos directamente.</p>
-                <hr>
-                <i class="bi bi-hand-thumbs-up-fill fs-1"></i>
-                <p class="mb-0 mt-2">¡Gracias por tu comprensión!</p>
-            </div>
-        </div>
-        }
-
-        @for (service of services; track $index) {
-        <div class="col-12 col-md-6 col-lg-3 text-center d-flex flex-column align-items-center p-4">
-          <div class="carousel-container position-relative">
-            @if (service.images.length > 0) {
-                <img [src]="service.images[0].imageUrl" class="mb-3 w-50" [alt]="service.name" />
-              @if (service.images.length > 1) {
-                <button class="carousel-control-prev" (click)="prevImage(service)">
-                  &#8249;
-                </button>
-                <button class="carousel-control-next" (click)="nextImage(service)">
-                  &#8250;
-                </button>
-              }
-            }
-          </div>
-          <p class="fw-bold">{{ service.name }}</p>
-          <p>{{ service.description }}</p>
-          <p class="fw-bold">Precio: ${{ service.price }}</p>
-          <p class="fw-bold">Duración: {{ service.duration }} min</p>
-        </div>
-        }
-        } @placeholder () {
-        @for (service of [].constructor(4); track $index) {
-        <div class="col-12 col-md-6 col-lg-3 text-center d-flex flex-column align-items-center p-4 placeholder-glow">
-            <div class="mb-3 w-50 placeholder" style="aspect-ratio: 1;"></div>
-            <p class="placeholder col-4"></p>
-            <p class="placeholder col-7 mt-2"></p>
-            <p class="placeholder col-5 mt-2"></p>
-            <p class="placeholder col-6"></p>
-        </div>
-        }
-        }
+  <div class="row d-flex justify-content-center">
+    @defer () {
+    <!-- Mostrar mensaje si no hay servicios -->
+    @if (services.length === 0) {
+    <div class="col-12 text-center">
+      <div class="alert">
+        <h4 class="alert-heading mb-2">No hay servicios disponibles</h4>
+        <p>Por favor, intentalo más tarde o contactanos directamente.</p>
+        <hr>
+        <i class="bi bi-hand-thumbs-up-fill fs-1"></i>
+        <p class="mb-0 mt-2">¡Gracias por tu comprensión!</p>
+      </div>
     </div>
+    }
+
+    @for (service of services; track $index) {
+    <div
+      class="col-12 col-md-6 col-lg-3 text-center d-flex flex-column align-items-center p-4 align-items-center justify-content-center">
+      <div class="position-relative img-hover-container">
+        @if (service.images.length > 1) {
+        <button class="btn btn-dark position-absolute top-50 start-0 translate-middle-y image-nav-button d-none"
+          (click)="changeImageIndex(service, -1)">&lt;</button>
+        }
+        <img [src]="service.images[service['currentImageIndex']].imageUrl" class="mb-3 w-50" [alt]="service.name">
+        @if (service.images.length > 1) {
+        <button class="btn btn-dark position-absolute top-50 end-0 translate-middle-y image-nav-button d-none"
+          (click)="changeImageIndex(service, 1)">&gt;</button>
+        }
+      </div>
+      <p class="fw-bold">{{ service.name }}</p>
+      <p>{{ service.description }}</p>
+      <p class="fw-bold">Precio: ${{ service.price }}</p>
+      <p class="fw-bold">Duración: {{ service.duration }} min</p>
+    </div>
+    }
+    } @placeholder () {
+    @for (service of [].constructor(4); track $index) {
+    <div class="col-12 col-md-6 col-lg-3 text-center d-flex flex-column align-items-center p-4 placeholder-glow">
+      <div class="mb-3 w-50 placeholder" style="aspect-ratio: 1;"></div>
+      <p class="placeholder col-4"></p>
+      <p class="placeholder col-7 mt-2"></p>
+      <p class="placeholder col-5 mt-2"></p>
+      <p class="placeholder col-6"></p>
+    </div>
+    }
+    }
   </div>
-  
+</div>
