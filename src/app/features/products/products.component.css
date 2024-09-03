@@ -1,0 +1,30 @@
+.position-relative {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.image-nav-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    padding: 0.3rem;
+    cursor: pointer;
+    opacity: 0.7;
+}
+
+.image-nav-button.left {
+    left: -20px; /* Ajusta la posición si es necesario */
+}
+
+.image-nav-button.right {
+    right: -20px; /* Ajusta la posición si es necesario */
+}
+
+.image-nav-button:hover {
+    opacity: 1;
+}
