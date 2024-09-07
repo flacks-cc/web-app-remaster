@@ -8,7 +8,7 @@ import { AuthenticationResponse } from "../models/authentication-response.model"
   providedIn: 'root'
 })
 export class AuthService {
-  private URL = 'http://localhost:8080/api/v1/users';
+  private URL = 'https://api-rest-flacks.onrender.com/api/v1/users';
   private _http = inject(HttpClient);
 
   // Método de inicio de sesión

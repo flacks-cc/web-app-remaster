@@ -8,7 +8,7 @@ import { Product } from "../models/product.model";
 })
 export class ProductService {
   
-  private URL = 'http://localhost:8080/api/v1/products';
+  private URL = 'https://api-rest-flacks.onrender.com/api/v1/products';
 
   constructor(private httpClient: HttpClient) {}
 
