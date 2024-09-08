@@ -10,8 +10,7 @@ import { ToastService } from '../../../core/services/util/toast.service';
   selector: 'app-manage-products',
   standalone: true,
   imports: [ReactiveFormsModule, NgClass, LimitDigitsDirective],
-  templateUrl: './manage-products.component.html',
-  styleUrls: ['./manage-products.component.css']
+  templateUrl: './manage-products.component.html'
 })
 export class ManageProductsComponent implements OnInit {
   products: Product[] = [];
@@ -23,7 +22,7 @@ export class ManageProductsComponent implements OnInit {
   productForm: FormGroup;
   productToDelete: Product | null = null;
   errorMessage: string = '';
-  imageUploadError: { name: string; error: string }[] = [];
+  imageUploadError: { error: string }[] = [];
 
   private _toastService = inject(ToastService);
   private _productService = inject(ProductService);
@@ -33,8 +32,8 @@ export class ManageProductsComponent implements OnInit {
     this.productForm = this._fb.group({
       name: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
       brand: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
-      description: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(254)]],
-      price: ['', [Validators.required, Validators.min(0)]]
+      description: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(255)]],
+      price: ['', [Validators.required, Validators.min(1), Validators.max(5000), Validators.pattern(/^\d+$/)]],
     });
   }
 
@@ -80,43 +79,40 @@ export class ManageProductsComponent implements OnInit {
     const allowedFormats = ['image/jpg', 'image/png', 'image/jpeg', 'image/webp', 'image/heif'];
     const maxSizeInMB = 4;
     const maxSizeInBytes = maxSizeInMB * 1024 * 1024;
-  
+
     if (!input || !input.files) {
       return;
     }
-  
+
     const files = input.files;
     const newImageFiles = Array.from(files);
     const totalFiles = this.tempImages.length + newImageFiles.length;
-  
+
     if (totalFiles <= 6) {
       this.imageUploadError = [];
     } else {
       this.imageUploadError.push({
-        name: 'Error:',
         error: 'No puedes seleccionar más de 6 imágenes en total.'
       });
       input.value = '';
       return;
     }
-  
+
     newImageFiles.forEach((file) => {
       if (!allowedFormats.includes(file.type)) {
         this.imageUploadError.push({
-          name: `La imagen ${file.name}`,
-          error: `es un ${file.name.split('.').pop()} y solo se permiten JPG, PNG, JPEG, WEBP y HEIF.`
+          error: `La imagen ${file.name} es un ${file.name.split('.').pop()} y solo se permiten JPG, PNG, JPEG, WEBP y HEIF.`
         });
         return;
       }
-  
+
       if (file.size > maxSizeInBytes) {
         this.imageUploadError.push({
-          name: file.name,
-          error: `El archivo es demasiado grande. El tamaño máximo permitido es ${maxSizeInMB} MB.`
+          error: `La imagen ${file.name} es demasiado grande. El tamaño máximo permitido es ${maxSizeInMB} MB.`
         });
         return;
       }
-  
+
       const reader = new FileReader();
       reader.onload = () => {
         if (typeof reader.result === 'string') {
@@ -129,7 +125,7 @@ export class ManageProductsComponent implements OnInit {
       };
       reader.readAsDataURL(file);
     });
-  
+
     input.value = '';
   }
 
@@ -144,12 +140,12 @@ export class ManageProductsComponent implements OnInit {
         const ctx = canvas.getContext('2d');
         if (ctx) {
           ctx.drawImage(img, 0, 0, width, height);
-          resolve(canvas.toDataURL('image/jpeg', quality));
+          resolve(canvas.toDataURL('image/png', quality));
         }
       };
     });
   }
-  
+
   triggerFileInput() {
     const fileInput = document.getElementById('productImages') as HTMLInputElement;
     if (fileInput) {
@@ -193,6 +189,16 @@ export class ManageProductsComponent implements OnInit {
     this.errorMessage = '';
     this.imageUploadError = [];
 
+    Object.values(this.productForm.controls).forEach(control => {
+      control.markAsTouched();
+    });
+
+    if (this.tempImages.length === 0) {
+      this.imageUploadError.push({
+        error: `Las imágenes son obligatorias.`
+      });
+    }
+
     if (this.productForm.valid && this.tempImages.length > 0) {
       const formData = new FormData();
       const productData = this.productForm.value;
@@ -216,9 +222,7 @@ export class ManageProductsComponent implements OnInit {
                   formData.append('imageFile', blob, `${image.image}.${extension}`);
                 } else {
                   this.imageUploadError.push({
-                    name: `La imagen ${image.image}`,
-                    error: `tiene un formato no permitido: ${blob.type}. 
-                                    Solo se permiten JPEG, PNG, WEBP y HEIF.`
+                    error: `La imagen ${image.image} tiene un formato no permitido: ${blob.type}. Solo se permiten JPG, PNG, JPEG, WEBP y HEIF.`
                   });
                 }
               });
@@ -238,9 +242,7 @@ export class ManageProductsComponent implements OnInit {
                 formData.append('imageFile', blob, `image${index}.${extension}`);
               } else {
                 this.imageUploadError.push({
-                  name: `Imagen ${index}`,
-                  error: `tiene un formato no permitido: ${blob.type}. 
-                                Solo se permiten JPEG, PNG, WEBP y HEIF.`
+                  error: `La imagen ${index} tiene un formato no permitido: ${blob.type}. Solo se permiten JPG, PNG, JPEG, WEBP y HEIF.`
                 });
               }
             });

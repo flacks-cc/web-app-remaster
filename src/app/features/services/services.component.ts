@@ -6,8 +6,7 @@ import { Service } from '../../core/models/service.model';
   selector: 'app-services',
   standalone: true,
   imports: [],
-  templateUrl: './services.component.html',
-  styleUrls: ['./services.component.css']
+  templateUrl: './services.component.html'
 })
 export class ServicesComponent implements OnInit {
 

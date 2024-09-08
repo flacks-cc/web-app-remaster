@@ -8,6 +8,8 @@
         </button>
     </div>
 
+    @defer () {
+    @if (services.length != 0) {
     <!-- Tabla de servicios -->
     <div class="table-responsive rounded">
         <table class="table table-striped">
@@ -27,7 +29,7 @@
                     <td class="text-center align-middle text-nowrap-small" hidden>{{ service.idService }}</td>
                     <td class="text-start align-middle text-nowrap-small">{{ service.name }}</td>
                     <td class="text-start align-middle text-nowrap-small">{{ service.description }}</td>
-                    <td class="text-center align-middle text-nowrap-small">${{ service.price }}</td>
+                    <td class="text-center align-middle text-nowrap-small">${{ service.price }} MXN</td>
                     <td class="text-center align-middle text-nowrap-small">{{ service.duration }} min</td>
                     <td class="text-center align-middle text-nowrap-small">
                         <button class="btn btn-primary btn-sm me-1" data-bs-toggle="modal"
@@ -44,155 +46,247 @@
             </tbody>
         </table>
     </div>
-</div>
+    }
 
-<!-- Modal para agregar/editar servicio -->
-<div class="modal fade" id="EditOrAddServiceModal" tabindex="-1" aria-labelledby="EditOrAddServiceModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">{{ isEditing ? 'Editar servicio' : 'Agregar servicio' }}</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="resetModalState()"></button>
-            </div>
-            <div class="modal-body p-4">
-                <!-- Formulario de servicio -->
-                <form [formGroup]="serviceForm" (ngSubmit)="saveService()">
-                    <div class="mb-3">
-                        <label for="name" class="form-label">Nombre del servicio</label>
-                        <div class="input-group">
-                            <span class="input-group-text"
-                                [class.border-danger]="serviceForm.get('name')?.invalid && (serviceForm.get('name')?.dirty || serviceForm.get('name')?.touched)">
-                                <i class="bi bi-tag"></i></span>
-                            <input type="text" class="form-control" id="name" formControlName="name"
-                                [class.is-invalid]="serviceForm.get('name')?.invalid && (serviceForm.get('name')?.dirty || serviceForm.get('name')?.touched)"
-                                placeholder="Nombre del servicio" maxlength="100" required>
-                        </div>
-                        @if (serviceForm.get('name')?.invalid && (serviceForm.get('name')?.dirty ||
-                        serviceForm.get('name')?.touched)) {
-                        <div class="my-3">
-                            @if (serviceForm.hasError('required', 'name')) {
-                            <small class="text-danger">El nombre del servicio es obligatorio. </small>
-                            }
-                            @if (serviceForm.hasError('minlength', 'name')) {
-                            <small class="text-danger">El nombre del servicio debe ser mayor a 3 caracteres. </small>
-                            }
-                            @if (serviceForm.hasError('maxlength', 'name')) {
-                            <small class="text-danger">El nombre del servicio debe ser menor a 100 caracteres.
-                            </small>
-                            }
-                        </div>
-                        }
-                    </div>
-                    <div class="mb-3">
-                        <label for="description" class="form-label">Descripción</label>
-                        <div class="input-group">
-                            <span class="input-group-text"
-                                [class.border-danger]="serviceForm.get('description')?.invalid && (serviceForm.get('description')?.dirty || serviceForm.get('description')?.touched)">
-                                <i class="bi bi-pencil"></i></span>
-                            <textarea class="form-control" id="description" formControlName="description"
-                                [class.is-invalid]="serviceForm.get('description')?.invalid && (serviceForm.get('description')?.dirty || serviceForm.get('description')?.touched)"
-                                rows="2" placeholder="Descripción del servicio" maxlength="255" required></textarea>
-                        </div>
-                        @if (serviceForm.get('description')?.invalid && (serviceForm.get('description')?.dirty ||
-                        serviceForm.get('description')?.touched)) {
-                        <div class="my-3">
-                            @if (serviceForm.hasError('required', 'description')) {
-                            <small class="text-danger">La descripción del servicio es obligatoria. </small>
-                            }
-                            @if (serviceForm.hasError('minlength', 'description')) {
-                            <small class="text-danger">La descripción del servicio debe ser mayor a 3 caracteres.
-                            </small>
-                            }
-                            @if (serviceForm.hasError('maxlength', 'description')) {
-                            <small class="text-danger">La descripción del servicio debe ser menor a 255 caracteres.
-                            </small>
-                            }
-                        </div>
-                        }
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="price" class="form-label">Precio</label>
+    <!-- Mostrar mensaje si no hay servicios -->
+    @if (services.length === 0) {
+    <div class="col-12 text-center">
+        <div class="alert">
+            <h4 class="alert-heading mb-3">No hay servicios disponibles</h4>
+            <p class="mb-0">Puedes añadir nuevos servicios haciendo clic en el botón que se encuentra en la esquina
+                superior derecha.</p>
+            <p>Si crees que se trata de un error comunicate con el administrador del sitio web.</p>
+            <i class="bi bi-exclamation-circle-fill fs-1"></i>
+            <p class="mb-0 mt-2">¡Gracias por tu comprensión!</p>
+            <hr>
+        </div>
+    </div>
+    }
+
+    } @placeholder () {
+    <div class="table-responsive rounded placeholder-glow">
+        <table class="table table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th class="col-md-2">
+                        <p class="placeholder m-0 col-9"></p>
+                    </th>
+                    <th class="col-md-6">
+                        <p class="placeholder m-0 col-2"></p>
+                    </th>
+                    <th class="col-md-1">
+                        <p class="placeholder m-0 col-8"></p>
+                    </th>
+                    <th class="col-md-1">
+                        <p class="placeholder m-0 col-9"></p>
+                    </th>
+                    <th class="col-md-1">
+                        <p class="placeholder m-0 col-10"></p>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (service of [].constructor(10); track $index) {
+                <tr>
+                    <td>
+                        <p class="placeholder m-0 col-12"></p>
+                    </td>
+                    <td>
+                        <p class="placeholder m-0 col-12"></p>
+                    </td>
+                    <td>
+                        <p class="placeholder m-0 col-7"></p>
+                    </td>
+                    <td>
+                        <p class="placeholder m-0 col-7"></p>
+                    </td>
+                    <td>
+                        <button class="btn btn-sm me-1 placeholder">
+                            <i class="bi bi-pencil-fill"></i>
+                        </button>
+                        <button class="btn btn-sm placeholder">
+                            <i class="bi bi-trash3-fill"></i>
+                        </button>
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    }
+
+    <!-- Modal para agregar/editar servicio -->
+    <div class="modal fade" id="EditOrAddServiceModal" tabindex="-1" aria-labelledby="EditOrAddServiceModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{{ isEditing ? 'Editar servicio' : 'Agregar servicio' }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                        (click)="resetModalState()"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <!-- Formulario de servicio -->
+                    <form [formGroup]="serviceForm" (ngSubmit)="saveService()">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Nombre del servicio</label>
                             <div class="input-group">
                                 <span class="input-group-text"
-                                    [class.border-danger]="serviceForm.get('price')?.invalid && (serviceForm.get('price')?.dirty || serviceForm.get('price')?.touched)">
-                                    <i class="bi bi-currency-dollar"></i></span>
-                                <input type="number" class="form-control" id="price" formControlName="price"
-                                    [class.is-invalid]="serviceForm.get('price')?.invalid && (serviceForm.get('price')?.dirty || serviceForm.get('price')?.touched)"
-                                    placeholder="Precio del servicio" appLimitDigits="4">
+                                    [class.border-danger]="serviceForm.get('name')?.invalid && (serviceForm.get('name')?.dirty || serviceForm.get('name')?.touched)">
+                                    <i class="bi bi-tag"></i></span>
+                                <input type="text" class="form-control" id="name" formControlName="name"
+                                    [class.is-invalid]="serviceForm.get('name')?.invalid && (serviceForm.get('name')?.dirty || serviceForm.get('name')?.touched)"
+                                    placeholder="Nombre del servicio" maxlength="100" required>
                             </div>
-                            @if (serviceForm.get('price')?.invalid && (serviceForm.get('price')?.dirty ||
-                            serviceForm.get('price')?.touched)) {
+                            @if (serviceForm.get('name')?.invalid && (serviceForm.get('name')?.dirty ||
+                            serviceForm.get('name')?.touched)) {
                             <div class="my-3">
-                                @if (serviceForm.hasError('min', 'price')) {
-                                <small class="text-danger">El precio debe ser mayor a 0 pesos. </small>
+                                @if (serviceForm.hasError('required', 'name')) {
+                                <small class="text-danger">El nombre del servicio es obligatorio. </small>
+                                }
+                                @if (serviceForm.hasError('minlength', 'name')) {
+                                <small class="text-danger">El nombre del servicio debe ser mayor a 3 caracteres.
+                                </small>
+                                }
+                                @if (serviceForm.hasError('maxlength', 'name')) {
+                                <small class="text-danger">El nombre del servicio debe ser menor a 100 caracteres.
+                                </small>
                                 }
                             </div>
                             }
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="duration" class="form-label">Duración (minutos)</label>
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Descripción</label>
                             <div class="input-group">
                                 <span class="input-group-text"
-                                    [class.border-danger]="serviceForm.get('duration')?.invalid && (serviceForm.get('duration')?.dirty || serviceForm.get('duration')?.touched)">
-                                    <i class="bi bi-clock"></i></span>
-                                <input type="number" class="form-control" id="duration" formControlName="duration"
-                                    [class.is-invalid]="serviceForm.get('duration')?.invalid && (serviceForm.get('duration')?.dirty || serviceForm.get('duration')?.touched)"
-                                    placeholder="Duración del servicio" appLimitDigits="3">
+                                    [class.border-danger]="serviceForm.get('description')?.invalid && (serviceForm.get('description')?.dirty || serviceForm.get('description')?.touched)">
+                                    <i class="bi bi-pencil"></i></span>
+                                <textarea class="form-control" id="description" formControlName="description"
+                                    [class.is-invalid]="serviceForm.get('description')?.invalid && (serviceForm.get('description')?.dirty || serviceForm.get('description')?.touched)"
+                                    rows="2" placeholder="Descripción del servicio" maxlength="255" required></textarea>
                             </div>
-                            @if (serviceForm.get('duration')?.invalid && (serviceForm.get('duration')?.dirty ||
-                            serviceForm.get('duration')?.touched)) {
+                            @if (serviceForm.get('description')?.invalid && (serviceForm.get('description')?.dirty ||
+                            serviceForm.get('description')?.touched)) {
                             <div class="my-3">
-                                @if (serviceForm.hasError('min', 'duration')) {
-                                <small class="text-danger">La duración del servicio debe ser mayor a 0 minutos. </small>
+                                @if (serviceForm.hasError('required', 'description')) {
+                                <small class="text-danger">La descripción del servicio es obligatoria. </small>
+                                }
+                                @if (serviceForm.hasError('minlength', 'description')) {
+                                <small class="text-danger">La descripción del servicio debe ser mayor a 3 caracteres.
+                                </small>
+                                }
+                                @if (serviceForm.hasError('maxlength', 'description')) {
+                                <small class="text-danger">La descripción del servicio debe ser menor a 255 caracteres.
+                                </small>
                                 }
                             </div>
                             }
                         </div>
-                    </div>
-                    <div>
-                        <div class="d-flex align-items-center">
-                            <label for="serviceImages" class="form-label me-2">Gestionar imágenes</label>
-                            <div class="dropdown dropdown-hover mb-2">
-                                <i class="bi bi-info-circle"></i>
-                                <div class="dropdown-menu p-3">
-                                    <p class="small m-0">
-                                        Puedes subir hasta 6 imágenes para mostrar en la galería del servicio.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <input class="form-control d-none" type="file" id="serviceImages"
-                            (change)="onFilesSelected($event)" multiple>
-
                         <div class="row">
-                            <div class="col-md-6">
-                                <div class="input-group pointer" (click)="triggerFileInput()">
-                                    <span class="input-group-text" title="Subir imágenes"><i
-                                            class="bi bi-arrow-up-circle"></i></span>
-                                    <input readonly class="form-control pointer" placeholder="Subir imágenes">
+                            <div class="col-md-6 mb-3">
+                                <label for="price" class="form-label">Precio</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"
+                                        [class.border-danger]="serviceForm.get('price')?.invalid && (serviceForm.get('price')?.dirty || serviceForm.get('price')?.touched)">
+                                        <i class="bi bi-currency-dollar"></i></span>
+                                    <input type="number" class="form-control" id="price" formControlName="price"
+                                        [class.is-invalid]="serviceForm.get('price')?.invalid && (serviceForm.get('price')?.dirty || serviceForm.get('price')?.touched)"
+                                        placeholder="Precio del servicio" appLimitDigits="4">
                                 </div>
-                            </div>
-                            @if (tempImages.length > 0) {
-                            <div class="col-md-6">
-                                <div class="input-group pointer" [class.pointer]="selectedImages.length > 0"
-                                    (click)="removeSelectedImages()">
-                                    <span class="input-group-text" title="Eliminar imágenes seleccionadas"><i
-                                            class="bi bi-trash3"></i></span>
-                                    <input readonly class="form-control pointer"
-                                        placeholder="Eliminar imágenes selecionadas"
-                                        [class.pointer]="selectedImages.length > 0"
-                                        [disabled]="selectedImages.length === 0">
+                                @if (serviceForm.get('price')?.invalid && (serviceForm.get('price')?.dirty ||
+                                serviceForm.get('price')?.touched)) {
+                                <div class="my-3">
+                                    @if (serviceForm.hasError('min', 'price')) {
+                                    <small class="text-danger">El precio debe ser mayor a 0 pesos.</small>
+                                    }
+                                    @if (serviceForm.hasError('max', 'price')) {
+                                    <small class="text-danger">El precio no puede superar los 5000 pesos.</small>
+                                    }
+                                    @if (serviceForm.hasError('pattern', 'price')) {
+                                    <small class="text-danger"> El precio debe ser un número entero.</small>
+                                    }
                                 </div>
+                                }
                             </div>
-                            }
+                            <div class="col-md-6 mb-3">
+                                <label for="duration" class="form-label">Duración (minutos)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"
+                                        [class.border-danger]="serviceForm.get('duration')?.invalid && (serviceForm.get('duration')?.dirty || serviceForm.get('duration')?.touched)">
+                                        <i class="bi bi-clock"></i></span>
+                                    <input type="number" class="form-control" id="duration" formControlName="duration"
+                                        [class.is-invalid]="serviceForm.get('duration')?.invalid && (serviceForm.get('duration')?.dirty || serviceForm.get('duration')?.touched)"
+                                        placeholder="Duración del servicio" appLimitDigits="3">
+                                </div>
+                                @if (serviceForm.get('duration')?.invalid && (serviceForm.get('duration')?.dirty ||
+                                serviceForm.get('duration')?.touched)) {
+                                <div class="my-3">
+                                    @if (serviceForm.hasError('min', 'duration')) {
+                                    <small class="text-danger">La duración debe ser mayor a 0 minutos.</small>
+                                    }
+                                    @if (serviceForm.hasError('max', 'duration')) {
+                                    <small class="text-danger">La duración no puede superar los 240 minutos.</small>
+                                    }
+                                    @if (serviceForm.hasError('pattern', 'duration')) {
+                                    <small class="text-danger">La duración debe ser un número entero.</small>
+                                    }
+                                </div>
+                                }
+                            </div>
                         </div>
-                    </div>
-                    @if (imageUploadError.length > 0) {
+                        <div>
+                            <div class="d-flex align-items-center">
+                                <label for="serviceImages" class="form-label me-2">Gestionar imágenes</label>
+                                <div class="dropdown dropdown-hover mb-2">
+                                    <i class="bi bi-info-circle"></i>
+                                    <div class="dropdown-menu p-3">
+                                        <p class="small m-1 border-bottom">
+                                            Puedes subir un máximo de 6 imágenes.
+                                        </p>
+                                        <p class="small m-1 border-bottom">
+                                            La imagen subida se ajustará a una escala de 1:1.
+                                        </p>
+                                        <p class="small m-1 border-bottom">
+                                            Formatos de imagen permitidos son JPG, PNG, JPEG, WEBP y HEIF.
+                                        </p>
+                                        <p class="small m-1 border-bottom">
+                                            Cada imagen debe tener un tamaño menor a 4 MB.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <input class="form-control d-none" type="file" id="serviceImages"
+                                (change)="onFilesSelected($event)" multiple>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="input-group pointer" (click)="triggerFileInput()">
+                                        <span class="input-group-text" [class.border-danger]="imageUploadError.length"
+                                            title="Subir imágenes">
+                                            <i class="bi bi-arrow-up-circle"></i></span>
+                                        <input readonly class="form-control pointer"
+                                            [class.is-invalid]="imageUploadError.length" placeholder="Subir imágenes">
+                                    </div>
+                                </div>
+                                @if (tempImages.length > 0) {
+                                <div class="col-md-6">
+                                    <div class="input-group pointer" [class.pointer]="selectedImages.length > 0"
+                                        (click)="removeSelectedImages()">
+                                        <span class="input-group-text" title="Eliminar imágenes seleccionadas"><i
+                                                class="bi bi-trash3"></i></span>
+                                        <input readonly class="form-control pointer"
+                                            placeholder="Eliminar imágenes selecionadas"
+                                            [class.pointer]="selectedImages.length > 0"
+                                            [disabled]="selectedImages.length === 0">
+                                    </div>
+                                </div>
+                                }
+                            </div>
+                        </div>
+                        @if (imageUploadError.length > 0) {
                         <div>
                             @for (error of imageUploadError; track $index) {
-                            <small class="text-danger my-3 d-block">{{ error.name }} {{ error.error }}</small>
+                            <small class="text-danger my-3 d-block">{{ error.error }}</small>
                             }
                         </div>
                         }
@@ -212,42 +306,46 @@
                             }
                         </div>
                         }
-                    <button class="d-none" type="submit" id="btnSubmit"></button>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="resetModalState()">Cancelar</button>
-                <button type="submit" class="btn" data-bs-dismiss="modal" (click)="triggerSubmit()"
-                    [attr.data-bs-dismiss]="serviceForm.valid && tempImages.length > 0 ? 'modal' : null"
-                    [ngClass]="isEditing ? 'btn-primary' : 'btn-success'"
-                    [disabled]="isEditing && (!isImagesChanges && !serviceForm.touched)">
-                    {{ isEditing ? 'Editar' : 'Guardar' }}
-                </button>
-                @if (errorMessage) {
-                <div class="text-danger mt-3" style="text-align: left; font-weight: normal;">{{ errorMessage }}</div>
-                }
+                        <button class="d-none" type="submit" id="btnSubmit"></button>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                        (click)="resetModalState()">Cancelar</button>
+                    <button type="submit" class="btn" data-bs-dismiss="modal" (click)="triggerSubmit()"
+                        [attr.data-bs-dismiss]="serviceForm.valid && tempImages.length > 0 ? 'modal' : null"
+                        [ngClass]="isEditing ? 'btn-primary' : 'btn-success'"
+                        [disabled]="isEditing && (!isImagesChanges && !serviceForm.touched)">
+                        {{ isEditing ? 'Editar' : 'Guardar' }}
+                    </button>
+                    @if (errorMessage) {
+                    <div class="text-danger mt-3" style="text-align: left; font-weight: normal;">{{ errorMessage }}
+                    </div>
+                    }
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Modal para eliminar servicio -->
-<div class="modal fade" id="deleteServiceModal" tabindex="-1" aria-labelledby="deleteServiceModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Eliminar servicio</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="resetModalState()"></button>
-            </div>
-            <div class="modal-body">
-                <p class="m-0">¿Estás seguro de que deseas eliminar el servicio {{serviceToDelete?.name}}?</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="resetModalState()">Cancelar</button>
-                <button type="button" class="btn btn-danger" data-bs-dismiss="modal"
-                    (click)="deleteService()">Eliminar</button>
+    <!-- Modal para eliminar servicio -->
+    <div class="modal fade" id="deleteServiceModal" tabindex="-1" aria-labelledby="deleteServiceModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Eliminar servicio</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                        (click)="resetModalState()"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="m-0">¿Estás seguro de que deseas eliminar el servicio {{serviceToDelete?.name}}?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                        (click)="resetModalState()">Cancelar</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal"
+                        (click)="deleteService()">Eliminar</button>
+                </div>
             </div>
         </div>
     </div>
-</div>

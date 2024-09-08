@@ -10,8 +10,7 @@ import { ToastService } from '../../../core/services/util/toast.service';
   selector: 'app-manage-services',
   standalone: true,
   imports: [ReactiveFormsModule, NgClass, LimitDigitsDirective],
-  templateUrl: './manage-services.component.html',
-  styleUrl: './manage-services.component.css'
+  templateUrl: './manage-services.component.html'
 })
 export class ManageServicesComponent implements OnInit {
   services: Service[] = [];
@@ -23,7 +22,7 @@ export class ManageServicesComponent implements OnInit {
   serviceForm: FormGroup;
   serviceToDelete: Service | null = null;
   errorMessage: string = '';
-  imageUploadError: { name: string; error: string }[] = [];
+  imageUploadError: { error: string }[] = [];
 
   private _toastService = inject(ToastService);
   private _serviceService = inject(ServiceService);
@@ -32,9 +31,9 @@ export class ManageServicesComponent implements OnInit {
   constructor() {
     this.serviceForm = this._fb.group({
       name: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
-      description: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(254)]],
-      price: ['', [Validators.min(0)]],
-      duration: ['', [Validators.min(0)]]
+      description: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(255)]],
+      price: ['', [Validators.min(1), Validators.max(5000), Validators.pattern(/^\d+$/)]],
+      duration: ['', [Validators.min(1), Validators.max(240), Validators.pattern(/^\d+$/)]],
     });
   }
 
@@ -102,43 +101,40 @@ export class ManageServicesComponent implements OnInit {
     const allowedFormats = ['image/jpg', 'image/png', 'image/jpeg', 'image/webp', 'image/heif'];
     const maxSizeInMB = 4;
     const maxSizeInBytes = maxSizeInMB * 1024 * 1024;
-  
+
     if (!input || !input.files) {
       return;
     }
-  
+
     const files = input.files;
     const newImageFiles = Array.from(files);
     const totalFiles = this.tempImages.length + newImageFiles.length;
-  
+
     if (totalFiles <= 6) {
       this.imageUploadError = [];
     } else {
       this.imageUploadError.push({
-        name: 'Error:',
         error: 'No puedes seleccionar más de 6 imágenes en total.'
       });
       input.value = '';
       return;
     }
-  
+
     newImageFiles.forEach((file) => {
       if (!allowedFormats.includes(file.type)) {
         this.imageUploadError.push({
-          name: `La imagen ${file.name}`,
-          error: `es un ${file.name.split('.').pop()} y solo se permiten JPG, PNG, JPEG, WEBP y HEIF.`
+          error: `La imagen ${file.name} es un ${file.name.split('.').pop()} y solo se permiten JPG, PNG, JPEG, WEBP y HEIF.`
         });
         return;
       }
-  
+
       if (file.size > maxSizeInBytes) {
         this.imageUploadError.push({
-          name: file.name,
-          error: `El archivo es demasiado grande. El tamaño máximo permitido es ${maxSizeInMB} MB.`
+          error: `La imagen ${file.name} es demasiado grande. El tamaño máximo permitido es ${maxSizeInMB} MB.`
         });
         return;
       }
-  
+
       const reader = new FileReader();
       reader.onload = () => {
         if (typeof reader.result === 'string') {
@@ -151,10 +147,10 @@ export class ManageServicesComponent implements OnInit {
       };
       reader.readAsDataURL(file);
     });
-  
+
     input.value = '';
   }
-  
+
   resizeImage(dataUrl: string, width: number, height: number, quality: number = 1.0): Promise<string> {
     return new Promise((resolve) => {
       const img = new Image();
@@ -166,12 +162,12 @@ export class ManageServicesComponent implements OnInit {
         const ctx = canvas.getContext('2d');
         if (ctx) {
           ctx.drawImage(img, 0, 0, width, height);
-          resolve(canvas.toDataURL('image/jpeg', quality));
+          resolve(canvas.toDataURL('image/png', quality));
         }
       };
     });
   }
-  
+
   selectImage(index: number, event: MouseEvent) {
     event.preventDefault();
     this.toggleSelection(index);
@@ -191,6 +187,16 @@ export class ManageServicesComponent implements OnInit {
   saveService() {
     this.errorMessage = '';
     this.imageUploadError = [];
+
+    Object.values(this.serviceForm.controls).forEach(control => {
+      control.markAsTouched();
+    });
+
+    if (this.tempImages.length === 0) {
+      this.imageUploadError.push({
+        error: `Las imágenes son obligatorias.`
+      });
+    }
 
     if (this.serviceForm.valid && this.tempImages.length > 0) {
       const formData = new FormData();
@@ -215,9 +221,7 @@ export class ManageServicesComponent implements OnInit {
                   formData.append('imageFile', blob, `${image.image}.${extension}`);
                 } else {
                   this.imageUploadError.push({
-                    name: `La imagen ${image.image}`,
-                    error: `tiene un formato no permitido: ${blob.type}. 
-                                    Solo se permiten JPEG, PNG, WEBP y HEIF.`
+                    error: `La imagen ${image.image} tiene un formato no permitido: ${blob.type}. Solo se permiten JPG, PNG, JPEG, WEBP y HEIF.`
                   });
                 }
               });
@@ -237,9 +241,7 @@ export class ManageServicesComponent implements OnInit {
                 formData.append('imageFile', blob, `image${index}.${extension}`);
               } else {
                 this.imageUploadError.push({
-                  name: `Imagen ${index}`,
-                  error: `tiene un formato no permitido: ${blob.type}. 
-                                Solo se permiten JPEG, PNG, WEBP y HEIF.`
+                  error: `La imagen ${index} tiene un formato no permitido: ${blob.type}. Solo se permiten JPG, PNG, JPEG, WEBP y HEIF.`
                 });
               }
             });
@@ -329,6 +331,7 @@ export class ManageServicesComponent implements OnInit {
 
   resetModalState() {
     this.serviceForm.reset();
+    this.imageUploadError = [];
     this.tempImages = [];
     this.selectedImages = [];
     this.errorMessage = '';

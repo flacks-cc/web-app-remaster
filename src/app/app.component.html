@@ -14,7 +14,6 @@
       <!-- Main Content Area -->
       <div class="col-10 offset-2 d-flex flex-column flex-grow-1 p-0">
         <div class="container-fluid d-flex flex-column flex-grow-1 overflow-auto p-0">
-          <app-toast></app-toast>
           <router-outlet></router-outlet>
         </div>
       </div>
@@ -29,6 +28,8 @@
       </div>
     </div>
     }
+
+    <app-toast></app-toast>
 
     @if (!isLoginRoute() && !isManageRoute()) {
     <app-footer class="mt-auto"></app-footer>
