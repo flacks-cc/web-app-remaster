@@ -27,6 +27,14 @@
         </div>
       </div>
     </div>
+
+    @if (!isLoginRoute()) {
+      <a href="https://bit.ly/Whatsappflacks" target="_blank" class="position-fixed bottom-0 start-0 m-3 z-3" title="Reservar">
+        <button class="btn btn-warning btn-lg rounded-circle" style="width: 70px; height: 70px;">
+          <i class="bi bi-calendar-check" style="font-size: 1.5rem;"></i>
+        </button>
+      </a>
+    }
     }
 
     <app-toast></app-toast>
