@@ -1,14 +1,14 @@
-import { HttpClient } from "@angular/common/http";
-import { Injectable } from "@angular/core";
-import { Observable } from "rxjs";
-import { Product } from "../models/product.model";
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { Product } from '../models/product.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ProductService {
-  
-  private URL = 'https://api-rest-flacks.onrender.com/api/v1/products';
+  private readonly URL = `${environment.apiUrl}/products`;
 
   constructor(private httpClient: HttpClient) {}
 

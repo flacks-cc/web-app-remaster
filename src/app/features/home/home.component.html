@@ -19,31 +19,98 @@
 
 <app-services></app-services>
 
-<div class="banner-2 d-flex justify-content-center align-items-center text-center vh-100 bg-cover bg-center bg-fixed">
-    <div class="position-relative d-flex flex-column justify-content-center align-items-center h-100 px-5">
-        <h3 class="fw-bold display-4 mb-3 text-white">¡Síguenos en nuestras redes sociales!</h3>
-        <p class="lead text-white">Mantente actualizado con nuestras últimas ofertas y estilos exclusivos.</p>
+<!-- HTML -->
+<div class="banner-2 d-flex justify-content-center align-items-center text-center min-vh-100 bg-cover bg-center bg-fixed py-5">
+    <div class="container px-3 px-md-5">
+        <div class="position-relative">
+            <h3 class="fw-bold display-4 mb-3 text-white banner-title">¡Síguenos en nuestras redes sociales!</h3>
+            <p class="lead text-white mb-4">Mantente actualizado con nuestras últimas ofertas y estilos exclusivos.</p>
 
-        <div class="d-flex gap-3 mt-3 justify-content-center">
-            <a href="https://www.facebook.com/profile.php?id=100063623951157" target="_blank"
-                class="btn btn-light btn-lg">
-                <i class="bi bi-facebook me-2"></i> Facebook
-            </a>
-            <a href="https://instagram.com/flacksbarber?igshid=NTc4MTIwNjQ2YQ==" target="_blank"
-                class="btn btn-light btn-lg">
-                <i class="bi bi-instagram me-2"></i> Instagram
-            </a>
-            <a href="https://www.tiktok.com/@flacksbarber?_t=8cvDOtRYKEH&_r=1" target="_blank"
-                class="btn btn-light btn-lg">
-                <i class="bi bi-tiktok me-2"></i> TikTok
-            </a>
-            <a href="https://bit.ly/Whatsappflacks" target="_blank"
-                class="btn btn-light btn-lg">
-                <i class="bi bi-whatsapp me-2"></i> WhatsApp
-            </a>
+            <div class="social-buttons d-flex flex-wrap gap-3 justify-content-center">
+                <a href="https://www.facebook.com/profile.php?id=100063623951157" target="_blank"
+                    class="btn btn-light social-btn">
+                    <i class="bi bi-facebook me-2"></i><span>Facebook</span>
+                </a>
+                <a href="https://instagram.com/flacksbarber?igshid=NTc4MTIwNjQ2YQ==" target="_blank"
+                    class="btn btn-light social-btn">
+                    <i class="bi bi-instagram me-2"></i><span>Instagram</span>
+                </a>
+                <a href="https://www.tiktok.com/@flacksbarber?_t=8cvDOtRYKEH&_r=1" target="_blank"
+                    class="btn btn-light social-btn">
+                    <i class="bi bi-tiktok me-2"></i><span>TikTok</span>
+                </a>
+                <a href="https://bit.ly/Whatsappflacks" target="_blank"
+                    class="btn btn-light social-btn">
+                    <i class="bi bi-whatsapp me-2"></i><span>WhatsApp</span>
+                </a>
+            </div>
         </div>
     </div>
 </div>
+
+<style>
+.banner-2 {
+    position: relative;
+    overflow: hidden;
+}
+
+.bg-cover {
+    background-size: cover;
+}
+
+.bg-center {
+    background-position: center;
+}
+
+.bg-fixed {
+    background-attachment: fixed;
+}
+
+.banner-title {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+}
+
+.social-btn {
+    padding: 0.75rem 1.5rem;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+}
+
+.social-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+    .lead {
+        font-size: 1rem;
+        padding: 0 1rem;
+    }
+
+    .social-buttons {
+        padding: 0 1rem;
+    }
+
+    .social-btn {
+        padding: 0.5rem 1rem;
+        width: calc(50% - 0.75rem); /* 2 botones por fila con gap */
+        min-width: 140px;
+    }
+}
+
+@media (max-width: 480px) {
+    .banner-2 {
+        min-height: auto !important;
+        padding: 3rem 0;
+    }
+
+    .social-btn {
+        width: 100%; /* 1 botón por fila */
+        max-width: 300px;
+    }
+}
+</style>
 
 <app-products></app-products>
 
