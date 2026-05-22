@@ -1,27 +1,78 @@
-# FLACKSREMASTERWEBAPP
+<h1 align="center">💻 Flack's Cut & Connect — Web App Remaster</h1>
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.2.1.
+<p align="center">
+  <em>Remastered web application with enhanced UI, improved UX, and modern Angular features</em>
+</p>
 
-## Development server
+<p align="center">
+  <a href="https://img.shields.io/badge/Angular-18-DD0031?logo=angular&logoColor=white"><img src="https://img.shields.io/badge/Angular-18-DD0031?logo=angular&logoColor=white" alt="Angular"></a>
+  <a href="https://img.shields.io/badge/Bootstrap-5-7952B3?logo=bootstrap&logoColor=white"><img src="https://img.shields.io/badge/Bootstrap-5-7952B3?logo=bootstrap&logoColor=white" alt="Bootstrap"></a>
+  <a href="https://img.shields.io/badge/License-GPL_v3-0298c3?logo=gnu&logoColor=white"><img src="https://img.shields.io/badge/License-GPL_v3-0298c3?logo=gnu&logoColor=white" alt="GPL v3"></a>
+  <a href="https://img.shields.io/badge/Status-Active-2ea44f"><img src="https://img.shields.io/badge/Status-Active-2ea44f" alt="Active"></a>
+</p>
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+<p align="center">
+  <a href="README.md">🇬🇧 English</a> · <a href="README.es.md">🇪🇸 Español</a>
+</p>
 
-## Code scaffolding
+---
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+## 🚀 Quick Start
 
-## Build
+### Prerequisites
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+- Node.js 18+
+- Angular CLI
 
-## Running unit tests
+### Installation
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+```bash
+git clone https://github.com/flacks-cc/web-app-remaster.git
+cd web-app-remaster
+npm install
+ng serve
+```
 
-## Running end-to-end tests
+## 🧩 Tech Stack
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+| Layer | Technology |
+|-------|-----------|
+| Framework | Angular 18 |
+| UI | Bootstrap 5 |
+| Language | TypeScript |
+| Database | PostgreSQL |
+| Auth | JWT |
 
-## Further help
+## 📂 Project Structure
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+```
+web-app-remaster/
+├── src/
+│   ├── app/
+│   ├── assets/
+│   ├── public/
+│   └── ...
+├── angular.json
+├── package.json
+└── README.md
+```
+
+## 🤝 Contributing
+
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details.
+
+## 📄 License
+
+GPL v3 — see [LICENSE](LICENSE).
+
+## 🙏 Acknowledgments
+
+**Authors:**
+
+- [@chrisssp](https://github.com/chrisssp) — Developer
+
+---
+
+<p align="center">
+  <sub>Built with ❤️ by the flacks-cc team · 2026</sub>
+</p>
