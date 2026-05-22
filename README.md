@@ -1,14 +1,19 @@
-<h1 align="center">💻 Flack's Cut & Connect — Web App Remaster</h1>
+# Flack's Cut & Connect — Web App Remaster
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Angular-18-DD0031?logo=angular&logoColor=white" alt="Angular">
+  <img src="https://img.shields.io/badge/Bootstrap-5-7952B3?logo=bootstrap&logoColor=white" alt="Bootstrap">
+  <img src="https://img.shields.io/badge/License-GPL_v3-0298c3?logo=gnu&logoColor=white" alt="GPL v3">
+</p>
 
 <p align="center">
   <em>Remastered web application with enhanced UI, improved UX, and modern Angular features</em>
 </p>
 
 <p align="center">
-  <a href="https://img.shields.io/badge/Angular-18-DD0031?logo=angular&logoColor=white"><img src="https://img.shields.io/badge/Angular-18-DD0031?logo=angular&logoColor=white" alt="Angular"></a>
-  <a href="https://img.shields.io/badge/Bootstrap-5-7952B3?logo=bootstrap&logoColor=white"><img src="https://img.shields.io/badge/Bootstrap-5-7952B3?logo=bootstrap&logoColor=white" alt="Bootstrap"></a>
-  <a href="https://img.shields.io/badge/License-GPL_v3-0298c3?logo=gnu&logoColor=white"><img src="https://img.shields.io/badge/License-GPL_v3-0298c3?logo=gnu&logoColor=white" alt="GPL v3"></a>
-  <a href="https://img.shields.io/badge/Status-Active-2ea44f"><img src="https://img.shields.io/badge/Status-Active-2ea44f" alt="Active"></a>
+  <a href="https://github.com/flacks-cc/web-app-remaster">Repository</a>
+  ·
+  <a href="https://github.com/flacks-cc/web-app-remaster/issues">Report Bug</a>
 </p>
 
 <p align="center">
@@ -17,14 +22,25 @@
 
 ---
 
-## 🚀 Quick Start
+## About Flack's Cut & Connect
+
+Remastered web administration panel with enhanced UI/UX and modern Angular features. Provides improved performance, better user experience, and updated design patterns for barbershop management.
+
+## Features
+
+- Enhanced staff management
+- Improved appointment handling
+- Advanced inventory control
+- Modern analytics dashboard
+
+## Quick Start
 
 ### Prerequisites
 
 - Node.js 18+
 - Angular CLI
 
-### Installation
+### Setup
 
 ```bash
 git clone https://github.com/flacks-cc/web-app-remaster.git
@@ -33,46 +49,35 @@ npm install
 ng serve
 ```
 
-## 🧩 Tech Stack
-
-| Layer | Technology |
-|-------|-----------|
-| Framework | Angular 18 |
-| UI | Bootstrap 5 |
-| Language | TypeScript |
-| Database | PostgreSQL |
-| Auth | JWT |
-
-## 📂 Project Structure
+## Architecture
 
 ```
-web-app-remaster/
-├── src/
-│   ├── app/
-│   ├── assets/
-│   ├── public/
-│   └── ...
-├── angular.json
-├── package.json
-└── README.md
+(TBD)
 ```
 
-## 🤝 Contributing
+## Contributing
 
-Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details.
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for branch naming, commit conventions, and PR workflow.
 
-## 📄 License
+## License
 
-GPL v3 — see [LICENSE](LICENSE).
+This project is licensed under the GPL v3 — see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 **Authors:**
 
-- [@chrisssp](https://github.com/chrisssp) — Developer
+- Serrano Puertos Jorge Christian
+- Chávez Moreno José Eduardo
+- Fernández López Kevin Noé
+- Florentino Altamirano Misrael
+- Ortiz Pérez Alejandro
+- Moises Torres Bernabé
 
----
+**Advisors:**
 
-<p align="center">
-  <sub>Built with ❤️ by the flacks-cc team · 2026</sub>
-</p>
+- (TBD)
+
+**Academic Support:**
+
+- (TBD)

@@ -1,14 +1,19 @@
-<h1 align="center">💻 Flack's Cut & Connect — App Web Remaster</h1>
+# Flack's Cut & Connect — App Web Remaster
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Angular-18-DD0031?logo=angular&logoColor=white" alt="Angular">
+  <img src="https://img.shields.io/badge/Bootstrap-5-7952B3?logo=bootstrap&logoColor=white" alt="Bootstrap">
+  <img src="https://img.shields.io/badge/Licencia-GPL_v3-0298c3?logo=gnu&logoColor=white" alt="GPL v3">
+</p>
 
 <p align="center">
   <em>Aplicación web remasterizada con UI mejorada, UX optimizada y funcionalidades modernas de Angular</em>
 </p>
 
 <p align="center">
-  <a href="https://img.shields.io/badge/Angular-18-DD0031?logo=angular&logoColor=white"><img src="https://img.shields.io/badge/Angular-18-DD0031?logo=angular&logoColor=white" alt="Angular"></a>
-  <a href="https://img.shields.io/badge/Bootstrap-5-7952B3?logo=bootstrap&logoColor=white"><img src="https://img.shields.io/badge/Bootstrap-5-7952B3?logo=bootstrap&logoColor=white" alt="Bootstrap"></a>
-  <a href="https://img.shields.io/badge/Licencia-GPL_v3-0298c3?logo=gnu&logoColor=white"><img src="https://img.shields.io/badge/Licencia-GPL_v3-0298c3?logo=gnu&logoColor=white" alt="GPL v3"></a>
-  <a href="https://img.shields.io/badge/Estado-Activo-2ea44f"><img src="https://img.shields.io/badge/Estado-Activo-2ea44f" alt="Activo"></a>
+  <a href="https://github.com/flacks-cc/web-app-remaster">Repositorio</a>
+  ·
+  <a href="https://github.com/flacks-cc/web-app-remaster/issues">Reportar error</a>
 </p>
 
 <p align="center">
@@ -17,7 +22,18 @@
 
 ---
 
-## 🚀 Inicio rápido
+## Acerca de Flack's Cut & Connect
+
+Panel de administración web remasterizado con UI/UX mejorada y funcionalidades modernas de Angular. Ofrece rendimiento optimizado, mejor experiencia de usuario y patrones de diseño actualizados para la gestión de barberías.
+
+## Funcionalidades
+
+- Gestión mejorada de personal
+- Manejo optimizado de citas
+- Control avanzado de inventario
+- Dashboard moderno de analíticas
+
+## Inicio rápido
 
 ### Requisitos previos
 
@@ -33,46 +49,35 @@ npm install
 ng serve
 ```
 
-## 🧩 Tecnologías
-
-| Capa | Tecnología |
-|------|-----------|
-| Framework | Angular 18 |
-| UI | Bootstrap 5 |
-| Lenguaje | TypeScript |
-| Base de datos | PostgreSQL |
-| Autenticación | JWT |
-
-## 📂 Estructura del proyecto
+## Arquitectura
 
 ```
-web-app-remaster/
-├── src/
-│   ├── app/
-│   ├── assets/
-│   ├── public/
-│   └── ...
-├── angular.json
-├── package.json
-└── README.md
+(Pendiente)
 ```
 
-## 🤝 Contribuciones
+## Contribuciones
 
-Lee [CONTRIBUTING.md](CONTRIBUTING.md) para más detalles.
+Lee [CONTRIBUTING.md](CONTRIBUTING.md) para conocer las convenciones de ramas, commits y PRs.
 
-## 📄 Licencia
+## Licencia
 
-GPL v3 — ver [LICENSE](LICENSE).
+Este proyecto está bajo la licencia GPL v3 — ver [LICENSE](LICENSE) para más detalles.
 
-## 🙏 Agradecimientos
+## Agradecimientos
 
 **Authors:**
 
-- [@chrisssp](https://github.com/chrisssp) — Desarrollador
+- Serrano Puertos Jorge Christian
+- Chávez Moreno José Eduardo
+- Fernández López Kevin Noé
+- Florentino Altamirano Misrael
+- Ortiz Pérez Alejandro
+- Moises Torres Bernabé
 
----
+**Advisors:**
 
-<p align="center">
-  <sub>Hecho con ❤️ por el equipo flacks-cc · 2026</sub>
-</p>
+- (TBD)
+
+**Apoyo académico:**
+
+- (TBD)
