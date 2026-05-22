@@ -8,7 +8,7 @@
 
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability in this project, please report it by emailing chrisssp.dev@gmail.com.
+If you discover a security vulnerability in this project, please report it by emailing christian.serrano.puertos@gmail.com.
 
 We will acknowledge receipt within 48 hours and provide a detailed response within 5 business days.
 
