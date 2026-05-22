@@ -11,8 +11,6 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/flacks-cc/web-app-remaster">Repositorio</a>
-  ·
   <a href="https://github.com/flacks-cc/web-app-remaster/issues">Reportar error</a>
 </p>
 
@@ -73,11 +71,3 @@ Este proyecto está bajo la licencia GPL v3 — ver [LICENSE](LICENSE) para más
 - Florentino Altamirano Misrael
 - Ortiz Pérez Alejandro
 - Moises Torres Bernabé
-
-**Advisors:**
-
-- (TBD)
-
-**Apoyo académico:**
-
-- (TBD)
